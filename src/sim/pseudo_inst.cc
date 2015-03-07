@@ -213,7 +213,7 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         spmPrintf(tc, args[0]);
         break;
 
-      case 0xB1: // SPM printf to test
+      case 0xB1: // SPM memory allocation function
         spmMalloc(tc, args[0]);
         break;
 
