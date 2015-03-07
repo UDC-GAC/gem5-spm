@@ -209,6 +209,14 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         m5PageFault(tc);
         break;
 
+      case 0xB0: // SPM printf to test
+        spmPrintf(tc, args[0]);
+        break;
+
+      case 0xB1: // SPM printf to test
+        spmMalloc(tc, args[0]);
+        break;
+
       default:
         warn("Unhandled m5 op: 0x%x\n", func);
         break;
@@ -715,6 +723,21 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
             exitSimLoop("work items exit count reached");
         }
     }
+}
+
+// Implementation test function printf
+void
+spmPrintf(ThreadContext *tc, char *chain)
+{
+  DPRINTF(PseudoInst, "PseudoInst::spmPrintf(%s)\n", chain);
+}
+
+
+// Implementation memory allocation function SPM
+void
+spmMalloc(ThreadContext *tc, uint64_t bytes)
+{
+  DPRINTF(PseudoInst, "PseudoInst::spmMalloc(%d)\n", bytes);
 }
 
 } // namespace PseudoInst

@@ -61,9 +61,6 @@ void m5_addsymbol(uint64_t addr, char *symbol);
 void m5_panic(void);
 void m5_work_begin(uint64_t workid, uint64_t threadid);
 void m5_work_end(uint64_t workid, uint64_t threadid);
-// pseudo instructions made for SPM
-void spm_printf(char *chain);
-void spm_malloc(uint64_t ns_delay, uint64_t ns_period);
 
 // These operations are for critical path annotation
 void m5a_bsm(char *sm, const void *id, int flags);
@@ -81,6 +78,10 @@ void m5a_pq(const void *id, char *q, int count);
 void m5a_l(char *lsm, const void *id, char *sm);
 void m5a_identify(uint64_t id);
 uint64_t m5a_getid(void);
+
+// pseudo instructions made for SPM
+void spm_printf(char *chain);
+void spm_malloc(uint64_t bytes);
 
 #define M5_AN_FL_NONE   0x0
 #define M5_AN_FL_BAD    0x2
