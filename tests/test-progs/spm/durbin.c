@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
-
+#include "/home/markoshorro/gem5/util/m5/m5op.h"
 /* Include polybench common header. */
 #include <polybench.h>
 
@@ -97,6 +97,8 @@ int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
   int n = N;
+
+  spm_printf("TEST PSEUDO-INST\n");
 
   /* Variable declaration/allocation. */
   POLYBENCH_2D_ARRAY_DECL(y, DATA_TYPE, N, N, n, n);

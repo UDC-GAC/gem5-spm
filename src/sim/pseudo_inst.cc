@@ -727,9 +727,9 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 
 // Implementation test function printf
 void
-spmPrintf(ThreadContext *tc, char *chain)
+spmPrintf(ThreadContext *tc, uint64_t chain)
 {
-  DPRINTF(PseudoInst, "PseudoInst::spmPrintf(%s)\n", chain);
+  DPRINTF(PseudoInst, "PseudoInst::spmPrintf(%s, %s)\n", chain, chain);
 }
 
 
