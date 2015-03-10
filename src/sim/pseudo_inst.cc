@@ -209,11 +209,11 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         m5PageFault(tc);
         break;
 
-      case 0xB0: // SPM printf to test
+      case 0xbb: // SPM printf to test
         spmPrintf(tc, args[0]);
         break;
 
-      case 0xB1: // SPM memory allocation function
+      case 0xbc: // SPM memory allocation function
         spmMalloc(tc, args[0]);
         break;
 

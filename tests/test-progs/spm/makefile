@@ -1,3 +1,5 @@
+# -I option searches for specified directory
+
 all:
-	gcc -I utilities utilities/polybench.c durbin.c -o durbin
+	gcc -I utilities utilities/polybench.c -I /home/markoshorro/gem5/util /home/markoshorro/gem5/util/m5/m5op_x86.S durbin.c -o durbin -DUNIX --static
 
