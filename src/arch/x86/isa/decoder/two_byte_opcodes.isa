@@ -227,6 +227,9 @@
                     0x5b: m5_work_end({{
                         PseudoInst::workend(xc->tcBase(), Rdi, Rsi);
                     }}, IsNonSpeculative);
+                    0xbb: spm_printf({{
+                        PseudoInst::spmPrintf(xc->tcBase(), Rdi);
+                    }}, IsNonSpeculative);
                     default: Inst::UD2();
                 }
             }
