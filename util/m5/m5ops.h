@@ -85,5 +85,6 @@
 #define an_getid          0x11
 
 // pseudo instructions made for SPM
-#define spmprintf_func    0xbb
-#define spmmalloc_func    0xbc
+#define spmmalloc_func    0xb0
+#define spmload_func      0xb1
+#define spmstore_func     0xb2

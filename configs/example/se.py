@@ -207,8 +207,8 @@ if is_kvm_cpu(CPUClass) or is_kvm_cpu(FutureClass):
 if options.fastmem:
     if CPUClass != AtomicSimpleCPU:
         fatal("Fastmem can only be used with atomic CPU!")
-    if (options.caches or options.l2cache):
-        fatal("You cannot use fastmem in combination with caches!")
+    if (options.caches or options.l2cache or options.scratchpad):
+        fatal("You cannot use fastmem in combination with caches or scratchpad memory!")
 
 if options.simpoint_profile:
     if not options.fastmem:

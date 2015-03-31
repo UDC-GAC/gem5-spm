@@ -209,12 +209,17 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         m5PageFault(tc);
         break;
 
-      case 0xbb: // SPM printf to test
-        spmPrintf(tc, args[0]);
+      /* SPM functions */
+      case 0xb0: // SPM memory allocation function
+        spmMalloc(tc, args[0]);
         break;
 
-      case 0xbc: // SPM memory allocation function
-        spmMalloc(tc, args[0]);
+      case 0xb1: // SPM load function
+        spmLoad(tc, args[0]);
+        break;
+
+      case 0xb2: // SPM store function
+        spmStore(tc, args[0]);
         break;
 
       default:
@@ -725,19 +730,31 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
     }
 }
 
-// Implementation test function printf
-void
-spmPrintf(ThreadContext *tc, uint64_t chain)
-{
-  DPRINTF(PseudoInst, "PseudoInst::spmPrintf(%s, %s)\n", chain, chain);
-}
-
-
+//
 // Implementation memory allocation function SPM
+//
 void
 spmMalloc(ThreadContext *tc, uint64_t bytes)
 {
-  DPRINTF(PseudoInst, "PseudoInst::spmMalloc(%d)\n", bytes);
+
+}
+
+//
+// This function loads a line from memory to scratchpad
+//
+void
+spmLoad(ThreadContext *tc, uint64_t bytes)
+{
+
+}
+
+//
+// 3This function stores a line from scratchpad to memory
+//
+void
+spmStore(ThreadContext *tc, uint64_t bytes)
+{
+
 }
 
 } // namespace PseudoInst

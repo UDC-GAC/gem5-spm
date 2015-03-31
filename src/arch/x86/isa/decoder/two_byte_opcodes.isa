@@ -227,9 +227,15 @@
                     0x5b: m5_work_end({{
                         PseudoInst::workend(xc->tcBase(), Rdi, Rsi);
                     }}, IsNonSpeculative);
-                    0xbb: spm_printf({{
-                        PseudoInst::spmPrintf(xc->tcBase(), Rdi);
+                    0xb0: spm_malloc({{
+                        PseudoInst::spmMalloc(xc->tcBase(), Rdi);
                     }}, IsNonSpeculative);
+//                  0xb1: spm_load({{
+//                      PseudoInst::spmLoad(?, Rdi);
+//                  }}, IsNonSpeculative);
+//                  0xb2: spm_store({{
+//                      PseudoInst::spmStore(?, Rdi);
+//                  }}, IsNonSpeculative);
                     default: Inst::UD2();
                 }
             }

@@ -98,7 +98,7 @@ int main(int argc, char** argv)
   /* Retrieve problem size. */
   int n = N;
 
-  spm_printf(11);
+  //spm_malloc(-1);
 
   /* Variable declaration/allocation. */
   POLYBENCH_2D_ARRAY_DECL(y, DATA_TYPE, N, N, n, n);
