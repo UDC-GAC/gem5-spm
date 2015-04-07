@@ -736,7 +736,11 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 void
 spmMalloc(ThreadContext *tc, uint64_t bytes)
 {
+    DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
 
+    //BaseCPU *cpu = tc->getCpuPtr();
+
+    return;
 }
 
 //
@@ -745,6 +749,11 @@ spmMalloc(ThreadContext *tc, uint64_t bytes)
 void
 spmLoad(ThreadContext *tc, uint64_t bytes)
 {
+    DPRINTF(PseudoInst, "PseudoInst::spmLoad()\n");
+
+    //BaseCPU *cpu = tc->getCpuPtr();
+
+    return;
 
 }
 
@@ -754,6 +763,11 @@ spmLoad(ThreadContext *tc, uint64_t bytes)
 void
 spmStore(ThreadContext *tc, uint64_t bytes)
 {
+    DPRINTF(PseudoInst, "PseudoInst::spmStore()\n");
+
+    //BaseCPU *cpu = tc->getCpuPtr();
+
+    return;
 
 }
 

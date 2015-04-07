@@ -5,5 +5,5 @@
 int main(int argc, char** argv)
 {
   printf("test\n");
-  spm_printf(11);
+  spm_malloc(11);
 }
