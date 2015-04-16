@@ -758,7 +758,7 @@ spmLoad(ThreadContext *tc, uint64_t bytes)
 }
 
 //
-// 3This function stores a line from scratchpad to memory
+// This function stores a line from scratchpad to memory
 //
 void
 spmStore(ThreadContext *tc, uint64_t bytes)
