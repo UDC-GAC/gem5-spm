@@ -95,6 +95,9 @@ def addCommonOptions(parser):
     parser.add_option("--mem-size", action="store", type="string",
                       default="512MB",
                       help="Specify the physical memory size (single memory)")
+    parser.add_option("--scratchpad", action="store_true")
+    parser.add_option("--spm", action="store", type="string", default="64kB",
+                      help = "enable Scratchpad memory")
 
     parser.add_option("-l", "--lpae", action="store_true")
     parser.add_option("-V", "--virtualisation", action="store_true")
@@ -105,7 +108,6 @@ def addCommonOptions(parser):
     parser.add_option("--caches", action="store_true")
     parser.add_option("--l2cache", action="store_true")
     parser.add_option("--fastmem", action="store_true")
-    #parser.add_option("--scratchpad", action="store_true")
     parser.add_option("--num-dirs", type="int", default=1)
     parser.add_option("--num-l2caches", type="int", default=1)
     parser.add_option("--num-l3caches", type="int", default=1)
@@ -118,8 +120,6 @@ def addCommonOptions(parser):
     parser.add_option("--l2_assoc", type="int", default=8)
     parser.add_option("--l3_assoc", type="int", default=16)
     parser.add_option("--cacheline_size", type="int", default=64)
-    #parser.add_option("--spm", action="store", type="string", default="64kB",
-                      help = "enable Scratchpad memory")
 
     # Enable Ruby
     parser.add_option("--ruby", action="store_true")

@@ -33,7 +33,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * Authors: Markos Horro (thanks Christian Menard for the idea)
+ * Authors: Markos Horro
  *
  */
 
@@ -87,6 +87,7 @@ class ScratchpadMemory : public AbstractMemory
     };
 
     /**
+     * TODO
      * Definition ScratchpadMasterPort
      */
     class ScratchpadMasterPort : public MasterPort
@@ -117,7 +118,7 @@ class ScratchpadMemory : public AbstractMemory
      */
     ScratchpadSlavePort slave_port; // connect with CPU
 
-    ScratchpadMasterPort master_port; // connect with main memory
+    // ScratchpadMasterPort master_port; // connect with main memory
 
     /**
      * Latency from that a request is accepted until the response is
@@ -155,7 +156,6 @@ class ScratchpadMemory : public AbstractMemory
      */
     Tick getLatencyRead() const;
 
-
   public:
 
     ScratchpadMemory(const ScratchpadMemoryParams *p);
@@ -163,8 +163,8 @@ class ScratchpadMemory : public AbstractMemory
     BaseSlavePort& getSlavePort(const std::string& if_name,
                                 PortID idx = InvalidPortID);
 
-    BaseSlavePort& getMasterPort(const std::string& if_name,
-                                PortID idx = InvalidPortID);
+    // BaseSlavePort& getMasterPort(const std::string& if_name,
+    //                             PortID idx = InvalidPortID);
 
     void init();
 
@@ -172,9 +172,9 @@ class ScratchpadMemory : public AbstractMemory
 
     Tick recvAtomic(PacketPtr pkt);
 
-    void recvFunctional(PacketPtr pkt);
+    // void recvFunctional(PacketPtr pkt);
 
-    bool recvTimingReq(PacketPtr pkt);
+    // bool recvTimingReq(PacketPtr pkt);
 
     void recvRespRetry();
 
