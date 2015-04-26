@@ -35,7 +35,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # Authors: Markos Horro
-
+#
 # Configure the ScratchPad Memory
 #
 
@@ -45,7 +45,7 @@ from m5.objects import *
 def config_spm(options, system):
     if options.scratchpad:
         s = options.spm_size
-        spm = cls()
-        spm.range = m5.objects.AddrRange(s.start, size = s.size())
+        spm = ScratchpadMemory()
+        spm.range = m5.objects.AddrRange(start = options.mem_size, size = s.size())
         system.spm = spm
         system.spm.slave_port = system.membus.master

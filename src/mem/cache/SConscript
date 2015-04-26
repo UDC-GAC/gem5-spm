@@ -31,14 +31,12 @@
 Import('*')
 
 SimObject('BaseCache.py')
-#SimObject('ScratchPad.py')
 
 Source('base.cc')
 Source('cache.cc')
 Source('blk.cc')
 Source('mshr.cc')
 Source('mshr_queue.cc')
-#Source('scratchpad.cc')
 
 DebugFlag('Cache')
 DebugFlag('CachePort')

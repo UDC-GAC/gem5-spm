@@ -37,11 +37,9 @@ using namespace std;
 
 ScratchpadMemory::ScratchpadMemory(const ScratchpadMemoryParams* p) :
     AbstractMemory(p),
-    slave_port(name() + ".port", *this), 
+    port(name() + ".port", *this), 
     latency_read(p->latency_read),
-    latency_write(p->latency_write),
-    latency_read_var(p->latency_read_var),
-    latency_write_var(p->latency_write_var)
+    latency_read_var(p->latency_read_var)
 {
 }
 
@@ -52,8 +50,8 @@ ScratchpadMemory::init()
 
     // allow unconnected memories as this is used in several ruby
     // systems at the moment
-    if (slave_port.isConnected()) {
-        slave_port.sendRangeChange();
+    if (port.isConnected()) {
+        port.sendRangeChange();
     }
 }
 
@@ -81,13 +79,13 @@ ScratchpadMemory::getSlavePort(const std::string &if_name, PortID idx)
     }
 }
 
-ScratchpadMemory::ScratchpadSlavePort::ScratchpadSlavePort(const std::string& _name,
+ScratchpadMemory::MemoryPort::MemoryPort(const std::string& _name,
                                      ScratchpadMemory& _memory)
     : SlavePort(_name, &_memory), memory(_memory)
 { }
 
 AddrRangeList
-ScratchpadMemory::ScratchpadSlavePort::getAddrRanges() const
+ScratchpadMemory::MemoryPort::getAddrRanges() const
 {
     AddrRangeList ranges;
     ranges.push_back(memory.getAddrRange());
@@ -95,7 +93,7 @@ ScratchpadMemory::ScratchpadSlavePort::getAddrRanges() const
 }
 
 Tick
-ScratchpadMemory::ScratchpadSlavePort::recvAtomic(PacketPtr pkt)
+ScratchpadMemory::MemoryPort::recvAtomic(PacketPtr pkt)
 {
     return memory.recvAtomic(pkt);
 }
@@ -113,7 +111,7 @@ ScratchpadMemory::ScratchpadSlavePort::recvAtomic(PacketPtr pkt)
 // }
 
 void
-ScratchpadMemory::ScratchpadSlavePort::recvRespRetry()
+ScratchpadMemory::MemoryPort::recvRespRetry()
 {
     memory.recvRespRetry();
 }

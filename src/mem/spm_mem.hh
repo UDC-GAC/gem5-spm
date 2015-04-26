@@ -63,7 +63,7 @@ class ScratchpadMemory : public AbstractMemory
     /**
      * Definition ScratchpadSlavePort
      */
-    class ScratchpadSlavePort : public SlavePort
+    class MemoryPort : public SlavePort
     {
 
       private:
@@ -72,7 +72,7 @@ class ScratchpadMemory : public AbstractMemory
 
       public:
 
-        ScratchpadPort(const std::string& _name, ScratchpadMemory& _memory);
+        MemoryPort(const std::string& _name, ScratchpadMemory& _memory);
 
       protected:
 
@@ -82,41 +82,13 @@ class ScratchpadMemory : public AbstractMemory
 
         bool recvTimingReq(PacketPtr pkt);
 
-        AddrRangeList getAddrRanges() const;
-
-    };
-
-    /**
-     * TODO
-     * Definition ScratchpadMasterPort
-     */
-    class ScratchpadMasterPort : public MasterPort
-    {
-
-      private:
-
-        ScratchpadMemory& memory;
-
-      public:
-
-        ScratchpadPort(const std::string& _name, ScratchpadMemory& _memory);
-
-      protected:
-
-        Tick sendAtomic(PacketPtr pkt);
-
-        void sendFunctional(PacketPtr pkt);
-
-        bool sendTimingReq(PacketPtr pkt);
+        void recvRespRetry();
 
         AddrRangeList getAddrRanges() const;
 
     };
 
-    /**
-     * Ports: master and slave
-     */
-    ScratchpadSlavePort slave_port; // connect with CPU
+    MemoryPort port;
 
     // ScratchpadMasterPort master_port; // connect with main memory
 
@@ -130,7 +102,7 @@ class ScratchpadMemory : public AbstractMemory
      * Latency from that a request is sent until the response is
      * received.
      */
-    const Tick latency_write;
+    //const Tick latency_write;
 
     /**
      * Fudge factor added to the read latency
@@ -140,7 +112,7 @@ class ScratchpadMemory : public AbstractMemory
     /**
      * Fudge factor added to the write latency
      */
-    const Tick latency_write_var;
+    //const Tick latency_write_var;
 
     /**
      * Detemine the writting latency
@@ -162,9 +134,6 @@ class ScratchpadMemory : public AbstractMemory
 
     BaseSlavePort& getSlavePort(const std::string& if_name,
                                 PortID idx = InvalidPortID);
-
-    // BaseSlavePort& getMasterPort(const std::string& if_name,
-    //                             PortID idx = InvalidPortID);
 
     void init();
 

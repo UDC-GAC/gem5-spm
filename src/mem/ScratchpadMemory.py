@@ -41,8 +41,14 @@ from m5.params import *
 from AbstractMemory import *
 
 class ScratchpadMemory(AbstractMemory):
-    type = 'ScratchpadMemory'
-    cxx_header = "mem/spm_mem.hh"
+    type = 'SimpleMemory'
+    cxx_header = "mem/simple_mem.hh"
     slave_port = SlavePort("Slave ports")
-    latency_read = Param.Latency('10ns', "Request to response latency")
-    latency_read_var = Param.Latency('5ns', "Variable latency when reading")
+    latency = Param.Latency('10ns', "Request to response latency")
+    latency_var = Param.Latency('5ns', "Variable latency when reading")
+
+    bandwidth = Param.MemoryBandwidth('12.8GB/s',
+                                      "Combined read and write bandwidth")
+
+    # This memory will be managed by software, should it be on global map?
+    # in_addr_map = False

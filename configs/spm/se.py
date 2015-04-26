@@ -127,6 +127,10 @@ if args:
     print "Error: script doesn't take any positional arguments"
     sys.exit(1)
 
+if not options.scratchpad:
+    print "You must configure scratchpad memory"
+    sys.exit(1)
+
 multiprocesses = []
 numThreads = 1
 
@@ -169,7 +173,8 @@ if options.smt and options.num_cpus > 1:
 np = options.num_cpus
 system = System(cpu = [CPUClass(cpu_id=i) for i in xrange(np)],
                 mem_mode = test_mem_mode,
-                mem_ranges = [AddrRange(options.mem_size)],
+                # We have to make a division in the system memory map and make sure that the range is not occupied
+                mem_ranges = [AddrRange(size = options.mem_size), AddrRange(start = options.mem_size, size = options.spm_size),],
                 cache_line_size = options.cacheline_size)
 
 # Create a top-level voltage domain
