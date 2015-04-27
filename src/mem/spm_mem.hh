@@ -45,6 +45,8 @@
 #ifndef __SCRATCHPAD_MEMORY_HH__
 #define __SCRATCHPAD_MEMORY_HH__
 
+#include <deque>
+
 #include "mem/abstract_mem.hh"
 #include "mem/port.hh"
 #include "params/ScratchpadMemory.hh"
@@ -59,6 +61,22 @@ class ScratchpadMemory : public AbstractMemory
 {
 
   private:
+
+    /**
+     * A deferred packet stores a packet along with its scheduled
+     * transmission time
+     */
+    class DeferredPacket
+    {
+
+      public:
+
+        const Tick tick;
+        const PacketPtr pkt;
+
+        DeferredPacket(PacketPtr _pkt, Tick _tick) : tick(_tick), pkt(_pkt)
+        { }
+    };
 
     /**
      * Definition ScratchpadSlavePort
@@ -119,7 +137,7 @@ class ScratchpadMemory : public AbstractMemory
      *
      * @return the latency seen by the packet requested
      */
-    Tick getLatencyWrite() const;
+    //Tick getLatencyWrite() const;
 
     /**
      * Detemine the reading latency
@@ -128,9 +146,71 @@ class ScratchpadMemory : public AbstractMemory
      */
     Tick getLatencyRead() const;
 
+    /**
+     * Internal (unbounded) storage to mimic the delay caused by the
+     * actual memory access. Note that this is where the packet spends
+     * the memory latency.
+     */
+    std::deque<DeferredPacket> packetQueue;
+
+    /**
+     * Bandwidth in ticks per byte. The regulation affects the
+     * acceptance rate of requests and the queueing takes place after
+     * the regulation.
+     */
+    const double bandwidth;
+
+    /**
+     * Track the state of the memory as either idle or busy, no need
+     * for an enum with only two states.
+     */
+    bool isBusy;
+
+    /**
+     * Remember if we have to retry an outstanding request that
+     * arrived while we were busy.
+     */
+    bool retryReq;
+
+    /**
+     * Remember if we failed to send a response and are awaiting a
+     * retry. This is only used as a check.
+     */
+    bool retryResp;
+
+    /**
+     * Release the memory after being busy and send a retry if a
+     * request was rejected in the meanwhile.
+     */
+    void release();
+
+    EventWrapper<ScratchpadMemory, &ScratchpadMemory::release> releaseEvent;
+
+    /**
+     * Dequeue a packet from our internal packet queue and move it to
+     * the port where it will be sent as soon as possible.
+     */
+    void dequeue();
+
+    EventWrapper<ScratchpadMemory, &ScratchpadMemory::dequeue> dequeueEvent;
+
+    /** @todo this is a temporary workaround until the 4-phase code is
+     * committed. upstream caches needs this packet until true is returned, so
+     * hold onto it for deletion until a subsequent call
+     */
+    std::vector<PacketPtr> pendingDelete;
+
+    /**
+     * If we need to drain, keep the drain manager around until we're
+     * done here.
+     */
+    DrainManager *drainManager;
+
   public:
 
     ScratchpadMemory(const ScratchpadMemoryParams *p);
+
+    unsigned int drain(DrainManager *dm);
 
     BaseSlavePort& getSlavePort(const std::string& if_name,
                                 PortID idx = InvalidPortID);
@@ -141,9 +221,9 @@ class ScratchpadMemory : public AbstractMemory
 
     Tick recvAtomic(PacketPtr pkt);
 
-    // void recvFunctional(PacketPtr pkt);
+    void recvFunctional(PacketPtr pkt);
 
-    // bool recvTimingReq(PacketPtr pkt);
+    bool recvTimingReq(PacketPtr pkt);
 
     void recvRespRetry();
 

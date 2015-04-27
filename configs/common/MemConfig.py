@@ -75,19 +75,17 @@ def is_mem_class(cls):
         return False
 
 def get(name):
-    """Get a memory class from a user provided class name or alias."""
-
-    real_name = _mem_aliases.get(name, name)
+    """Get a memory class from a user provided class name."""
 
     try:
-        mem_class = _mem_classes[real_name]
+        mem_class = _mem_classes[name]
         return mem_class
     except KeyError:
         print "%s is not a valid memory controller." % (name,)
         sys.exit(1)
 
 def print_mem_list():
-    """Print a list of available memory classes including their aliases."""
+    """Print a list of available memory classes."""
 
     print "Available memory classes:"
     doc_wrapper = TextWrapper(initial_indent="\t\t", subsequent_indent="\t\t")
@@ -101,31 +99,13 @@ def print_mem_list():
             for line in doc_wrapper.wrap(doc):
                 print line
 
-    if _mem_aliases:
-        print "\nMemory aliases:"
-        for alias, target in _mem_aliases.items():
-            print "\t%s => %s" % (alias, target)
-
 def mem_names():
     """Return a list of valid memory names."""
-    return _mem_classes.keys() + _mem_aliases.keys()
+    return _mem_classes.keys()
 
 # Add all memory controllers in the object hierarchy.
 for name, cls in inspect.getmembers(m5.objects, is_mem_class):
     _mem_classes[name] = cls
-
-for alias, target in _mem_aliases_all:
-    if isinstance(target, tuple):
-        # Some aliases contain a list of memory controller models
-        # sorted in priority order. Use the first target that's
-        # available.
-        for t in target:
-            if t in _mem_classes:
-                _mem_aliases[alias] = t
-                break
-    elif target in _mem_classes:
-        # Normal alias
-        _mem_aliases[alias] = target
 
 def create_mem_ctrl(cls, r, i, nbr_mem_ctrls, intlv_bits, intlv_size):
     """
@@ -181,13 +161,20 @@ def create_mem_ctrl(cls, r, i, nbr_mem_ctrls, intlv_bits, intlv_size):
 def config_mem(options, system):
     """
     Create the memory controllers based on the options and attach them.
-
     If requested, we make a multi-channel configuration of the
     selected memory controller class by creating multiple instances of
     the specific class. The individual controllers have their
     parameters set such that the address range is interleaved between
     them.
     """
+
+    if options.external_memory_system:
+        system.external_memory = m5.objects.ExternalSlave(
+            port_type=options.external_memory_system,
+            port_data="init_mem0", port=system.membus.master,
+            addr_ranges=system.mem_ranges)
+        system.kernel_addr_check = False
+        return
 
     nbr_mem_ctrls = options.mem_channels
     import math

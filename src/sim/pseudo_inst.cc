@@ -738,7 +738,20 @@ spmMalloc(ThreadContext *tc, uint64_t bytes)
 {
     DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
 
-    //BaseCPU *cpu = tc->getCpuPtr();
+    // translate virtual-physical
+    // PageTable * pTable = tc->getProcessPtr()->pTable;
+    // for( ChunkGenerator gen( vaddr, size, VMPageSize ); !gen.done(); gen.next() ) {
+    //   Addr paddr;
+    //   if( !pTable->translate( gen.addr(), paddr ) ) {
+    // 	assert( false && "Translate error" );
+    //   }
+
+    //   // Add range to tracked set and allocate to SPM.
+    //   Address address( paddr );
+    //   assert( ((!set->isAddrPresent(address)) || (set->isAddrPresent(address) == spm)) && "Reallocating address in different SPM." );
+    //   spm->allocate( address, gen.size() );
+    //   std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
+    // }
 
     return;
 }
