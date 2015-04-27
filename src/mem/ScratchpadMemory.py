@@ -41,11 +41,11 @@ from m5.params import *
 from AbstractMemory import *
 
 class ScratchpadMemory(AbstractMemory):
-    type = 'SimpleMemory'
-    cxx_header = "mem/simple_mem.hh"
+    type = 'ScratchpadMemory'
+    cxx_header = "mem/spm_mem.hh"
     slave_port = SlavePort("Slave ports")
-    latency = Param.Latency('10ns', "Request to response latency")
-    latency_var = Param.Latency('5ns', "Variable latency when reading")
+    latency_read = Param.Latency('10ns', "Request to response latency")
+    latency_read_var = Param.Latency('5ns', "Variable latency when reading")
 
     bandwidth = Param.MemoryBandwidth('12.8GB/s',
                                       "Combined read and write bandwidth")
