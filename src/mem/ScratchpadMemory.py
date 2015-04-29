@@ -43,7 +43,7 @@ from AbstractMemory import *
 class ScratchpadMemory(AbstractMemory):
     type = 'ScratchpadMemory'
     cxx_header = "mem/spm_mem.hh"
-    slave_port = SlavePort("Slave ports")
+    port = SlavePort("Slave ports")
     latency_read = Param.Latency('10ns', "Request to response latency")
     latency_read_var = Param.Latency('5ns', "Variable latency when reading")
 

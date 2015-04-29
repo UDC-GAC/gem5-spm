@@ -46,6 +46,6 @@ def config_spm(options, system):
     if options.scratchpad:
         s = options.spm_size
         spm = ScratchpadMemory()
-        spm.range = m5.objects.AddrRange(start = options.mem_size, size = s.size())
+        spm.range = m5.objects.AddrRange(start = options.mem_size, size = s)
         system.spm = spm
-        system.spm.slave_port = system.membus.master
+        system.spm.port = system.membus.master

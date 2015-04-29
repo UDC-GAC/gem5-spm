@@ -174,7 +174,7 @@ np = options.num_cpus
 system = System(cpu = [CPUClass(cpu_id=i) for i in xrange(np)],
                 mem_mode = test_mem_mode,
                 # We have to make a division in the system memory map and make sure that the range is not occupied
-                mem_ranges = [AddrRange(options.mem_size), AddrRange(options.mem_size, options.spm_size)],
+                mem_ranges = [AddrRange(options.mem_size)],
                 cache_line_size = options.cacheline_size)
 
 # Create a top-level voltage domain

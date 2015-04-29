@@ -85,7 +85,7 @@ def addCommonOptions(parser):
     parser.add_option("--list-mem-types",
                       action="callback", callback=_listMemTypes,
                       help="List available memory types")
-    parser.add_option("--mem-type", type="choice", default="ddr3_1600_x64",
+    parser.add_option("--mem-type", type="choice", default="DDR3_1600_x64",
                       choices=MemConfig.mem_names(),
                       help = "type of memory to use")
     parser.add_option("--mem-channels", type="int", default=1,
@@ -106,6 +106,8 @@ def addCommonOptions(parser):
     parser.add_option("--memchecker", action="store_true")
 
     # Cache Options
+    parser.add_option("--external-memory-system", type="string",
+                      help="use external ports of this port_type for caches")
     parser.add_option("--caches", action="store_true")
     parser.add_option("--l2cache", action="store_true")
     parser.add_option("--fastmem", action="store_true")

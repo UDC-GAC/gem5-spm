@@ -45,24 +45,6 @@ from textwrap import  TextWrapper
 # classes.
 _mem_classes = {}
 
-# Memory aliases. We make sure they exist before we add them to the
-# fina; list. A target may be specified as a tuple, in which case the
-# first available memory controller model in the tuple will be used.
-_mem_aliases_all = [
-    ("simple_mem", "SimpleMemory"),
-    ("ddr3_1600_x64", "DDR3_1600_x64"),
-    ("lpddr2_s4_1066_x32", "LPDDR2_S4_1066_x32"),
-    ("lpddr3_1600_x32", "LPDDR3_1600_x32"),
-    ("wio_200_x128", "WideIO_200_x128"),
-    ("dramsim2", "DRAMSim2"),
-    ("ruby_memory", "RubyMemoryControl")
-    ]
-
-# Filtered list of aliases. Only aliases for existing memory
-# controllers exist in this list.
-_mem_aliases = {}
-
-
 def is_mem_class(cls):
     """Determine if a class is a memory controller that can be instantiated"""
 
