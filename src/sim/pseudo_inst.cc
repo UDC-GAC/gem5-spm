@@ -74,6 +74,10 @@
 #include "sim/stats.hh"
 #include "sim/system.hh"
 #include "sim/vptr.hh"
+#include "mem/spm_mem.hh"
+
+#include "base/chunk_generator.hh"
+#include "mem/ruby/common/Address.hh"
 
 using namespace std;
 
@@ -738,22 +742,28 @@ spmMalloc(ThreadContext *tc, uint64_t bytes)
 {
     DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
 
-    ScratchpadMemory spm = tc->getSystemPtr()->spm;
+    // ScratchpadMemory *spm = tc->getProcessPtr()->spm;
 
-    void *vaddr = malloc(bytes);
+    Addr *vaddr = (Addr *) malloc(bytes);
+
+    *vaddr = (Addr) vaddr; 
+
+    Addr VMPageSize = tc->getSystemPtr()->getPageBytes();
+
+    std::cout << "dir: " << *vaddr << ". bytes:" << bytes << ". VMPage:" << VMPageSize << std::endl;
 
     // translate virtual-physical
-    PageTable * pTable = tc->getProcessPtr()->pTable;
-    for( ChunkGenerator gen( vaddr, bytes, VMPageSize ); !gen.done(); gen.next() ) {
+    PageTableBase * pTable = tc->getProcessPtr()->pTable;
+    for (ChunkGenerator gen(*vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
        Addr paddr;
-       if( !pTable->translate( gen.addr(), paddr ) ) {
+       if (!pTable->translate(gen.addr(), paddr)) {
      	assert( false && "Translate error" );
        }
 
        // Add range to tracked set and allocate to SPM.
-       Address address( paddr );
-       assert( ((!set->isAddrPresent(address)) || (set->isAddrPresent(address) == spm)) && "Reallocating address in different SPM." );
-       spm->allocate( address, gen.size() );
+       Address address(paddr);
+       //assert( ((!set->isAddrPresent(address)) || (set->isAddrPresent(address) == spm)) && "Reallocating address in different SPM." );
+       //spm->allocate( address, gen.size() );
        std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
     }
 

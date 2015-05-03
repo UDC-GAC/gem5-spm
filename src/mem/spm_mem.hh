@@ -47,6 +47,7 @@
 
 #include <deque>
 
+#include "base/statistics.hh"
 #include "mem/abstract_mem.hh"
 #include "mem/port.hh"
 #include "params/ScratchpadMemory.hh"
@@ -206,7 +207,45 @@ class ScratchpadMemory : public AbstractMemory
      */
     DrainManager *drainManager;
 
+    // All statistics that the model needs to capture
+    Stats::Scalar readReqs;
+    Stats::Scalar writeReqs;
+    Stats::Scalar readBursts;
+    Stats::Scalar writeBursts;
+    Stats::Scalar bytesReadDRAM;
+    Stats::Scalar bytesReadWrQ;
+    Stats::Scalar bytesWritten;
+    Stats::Scalar bytesReadSys;
+    Stats::Scalar bytesWrittenSys;
+    Stats::Scalar servicedByWrQ;
+    Stats::Scalar mergedWrBursts;
+    Stats::Scalar neitherReadNorWrite;
+    Stats::Vector perBankRdBursts;
+    Stats::Vector perBankWrBursts;
+    Stats::Scalar numRdRetry;
+    Stats::Scalar numWrRetry;
+    Stats::Scalar totGap;
+    Stats::Vector readPktSize;
+    Stats::Vector writePktSize;
+    Stats::Vector rdQLenPdf;
+    Stats::Vector wrQLenPdf;
+    Stats::Histogram bytesPerActivate;
+    Stats::Histogram rdPerTurnAround;
+    Stats::Histogram wrPerTurnAround;
+
+    // Latencies summed over all requests
+    Stats::Scalar totQLat;
+    Stats::Scalar totMemAccLat;
+    Stats::Scalar totBusLat;
+
+    // Average latencies per request
+    Stats::Formula avgQLat;
+    Stats::Formula avgBusLat;
+    Stats::Formula avgMemAccLat;
+
   public:
+
+    void regStats();
 
     ScratchpadMemory(const ScratchpadMemoryParams *p);
 

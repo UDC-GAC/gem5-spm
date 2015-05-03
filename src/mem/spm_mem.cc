@@ -282,3 +282,16 @@ ScratchpadMemoryParams::create()
 {
     return new ScratchpadMemory(this);
 }
+
+void
+ScratchpadMemory::regStats()
+{
+    using namespace Stats;
+
+    AbstractMemory::regStats();
+
+    for (auto r : ranks) {
+        r->regStats();
+    }
+
+}
