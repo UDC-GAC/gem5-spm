@@ -215,7 +215,7 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
 
       /* SPM functions */
       case 0xb0: // SPM memory allocation function
-        spmMalloc(tc, args[0]);
+        spmMalloc(tc, args[0], args[1]);
         break;
 
       case 0xb1: // SPM load function
@@ -742,11 +742,18 @@ spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 {
     DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
 
-    //ScratchpadMemory *spm = tc->getProcessPtr()->spm;
+    const std::vector<std::pair<AddrRange, uint8_t*> > &memories(tc->getSystemPtr()->getPhysMem().getBackingStore());
+    const AddrRange &range(memories[memories.size()-1].first);
+    void *pmem(memories[memories.size()-1].second);
+
+    if (pmem) {
+      std::cout << "Mapping region: 0x" <<  pmem << " -> " << range.start() << " [size: 0x" << range.size()  << "]\n";
+    }
 
     Addr VMPageSize = tc->getSystemPtr()->getPageBytes();
 
-    std::cout << "dir: " << vaddr << ". bytes:" << bytes << ". VMPage:" << VMPageSize << std::endl;
+    std::cout << "dir: " << vaddr << ". bytes:" << bytes
+ << ". VMPage:" << VMPageSize << std::endl;
 
     // translate virtual-physical
     PageTableBase * pTable = tc->getProcessPtr()->pTable;
@@ -759,7 +766,7 @@ spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
        // Add range to tracked set and allocate to SPM.
        Address address(paddr);
        //assert( ((!set->isAddrPresent(address)) || (set->isAddrPresent(address) == spm)) && "Reallocating address in different SPM." );
-       //spm->allocate( address, gen.size() );
+
        std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
     }
 
