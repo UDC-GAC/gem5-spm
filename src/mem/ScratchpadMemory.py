@@ -39,16 +39,85 @@
 
 from m5.params import *
 from AbstractMemory import *
+from DRAMCtrl import *
 
-class ScratchpadMemory(AbstractMemory):
-    type = 'ScratchpadMemory'
-    cxx_header = "mem/spm_mem.hh"
-    port = SlavePort("Slave ports")
-    latency_read = Param.Latency('10ns', "Request to response latency")
-    latency_read_var = Param.Latency('5ns', "Variable latency when reading")
+# BASED ON OWN IMPLEMENTATION
 
-    bandwidth = Param.MemoryBandwidth('12.8GB/s',
-                                      "Combined read and write bandwidth")
+#class ScratchpadMemory(AbstractMemory):
+#    type = 'ScratchpadMemory'
+#    cxx_header = "mem/spm_mem.hh"
+#    port = SlavePort("Slave ports")
+#    latency_read = Param.Latency('10ns', "Request to response latency")
+#    latency_read_var = Param.Latency('5ns', "Variable latency when reading")
+
+#    bandwidth = Param.MemoryBandwidth('12.8GB/s',
+#                                      "Combined read and write bandwidth")
 
     # This memory will be managed by software, should it be on global map?
     # in_addr_map = False
+
+# BASED ON DRAMCtrl IMPLEMENTATION
+
+class ScratchpadMemory(DRAMCtrl):
+    # size of device in bytes
+    device_size = '8MB'
+
+    # 8x8 configuration, 8 devices each with an 8-bit interface
+    device_bus_width = 8
+
+    # DDR3 is a BL8 device
+    burst_length = 8
+
+    # Each device has a page (row buffer) size of 1 Kbyte (1K columns x8)
+    device_rowbuffer_size = '1kB'
+
+    # 8x8 configuration, so 8 devices
+    devices_per_rank = 8
+
+    # Use two ranks
+    ranks_per_channel = 1
+
+    # DDR3 has 8 banks in all configurations
+    banks_per_rank = 8
+
+    # 1600 MHz
+    tCK = '0.625ns'
+
+    # 8 beats across an x64 interface translates to 4 clocks @ 800 MHz
+    tBURST = '5ns'
+
+    # DDR3-1600 11-11-11
+    tRCD = '10ns'
+    tCL = '10ns'
+    tRP = '10ns'
+    tRAS = '35ns'
+    tRRD = '4ns'
+    tXAW = '25ns'
+    activation_limit = 4
+    tRFC = '200ns'
+
+    tWR = '10ns'
+
+    # Greater of 4 CK or 7.5 ns
+    tWTR = '7ns'
+
+    # Greater of 4 CK or 7.5 ns
+    tRTP = '7ns'
+
+    # Default same rank rd-to-wr bus turnaround to 2 CK, @800 MHz = 2.5 ns
+    tRTW = '2ns'
+
+    # Default different rank bus delay to 2 CK, @800 MHz = 2.5 ns
+    tCS = '2ns'
+
+    # <=85C, half for >85C
+    tREFI = '7us'
+
+    # Current values from datasheet
+    IDD0 = '75mA'
+    IDD2N = '50mA'
+    IDD3N = '57mA'
+    IDD4W = '165mA'
+    IDD4R = '187mA'
+    IDD5 = '220mA'
+    VDD = '1.5V'

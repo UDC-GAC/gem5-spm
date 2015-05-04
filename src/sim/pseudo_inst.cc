@@ -74,7 +74,7 @@
 #include "sim/stats.hh"
 #include "sim/system.hh"
 #include "sim/vptr.hh"
-#include "mem/spm_mem.hh"
+//#include "mem/spm_mem.hh"
 
 #include "base/chunk_generator.hh"
 #include "mem/ruby/common/Address.hh"
@@ -738,23 +738,19 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 // Implementation memory allocation function SPM
 //
 void
-spmMalloc(ThreadContext *tc, uint64_t bytes)
+spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 {
     DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
 
-    // ScratchpadMemory *spm = tc->getProcessPtr()->spm;
-
-    Addr *vaddr = (Addr *) malloc(bytes);
-
-    *vaddr = (Addr) vaddr; 
+    //ScratchpadMemory *spm = tc->getProcessPtr()->spm;
 
     Addr VMPageSize = tc->getSystemPtr()->getPageBytes();
 
-    std::cout << "dir: " << *vaddr << ". bytes:" << bytes << ". VMPage:" << VMPageSize << std::endl;
+    std::cout << "dir: " << vaddr << ". bytes:" << bytes << ". VMPage:" << VMPageSize << std::endl;
 
     // translate virtual-physical
     PageTableBase * pTable = tc->getProcessPtr()->pTable;
-    for (ChunkGenerator gen(*vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
+    for (ChunkGenerator gen(vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
        Addr paddr;
        if (!pTable->translate(gen.addr(), paddr)) {
      	assert( false && "Translate error" );

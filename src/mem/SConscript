@@ -69,7 +69,7 @@ Source('snoop_filter.cc')
 Source('stack_dist_calc.cc')
 Source('tport.cc')
 Source('xbar.cc')
-Source('spm_mem.cc')
+#Source('spm_mem.cc')
 
 if env['TARGET_ISA'] != 'null':
     Source('fs_translating_port_proxy.cc')

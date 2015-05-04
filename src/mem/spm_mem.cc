@@ -60,8 +60,13 @@ ScratchpadMemory::init()
 Tick
 ScratchpadMemory::getLatencyRead() const
 {
-    return latency_read +
-        (latency_read_var ? random_mt.random<Tick>(0, latency_read_var) : 0);
+
+    Tick lat = latency_read +
+    (latency_read_var ? random_mt.random<Tick>(0, latency_read_var) : 0);
+
+    totMemAccLat += lat;
+
+    return lat;
 }
 
 Tick
@@ -105,6 +110,12 @@ ScratchpadMemory::recvTimingReq(PacketPtr pkt)
         return true;
     }
 
+    // // Calc avg gap between requests
+    // if (prevArrival != 0) {
+    //     totGap += curTick() - prevArrival;
+    // }
+    // prevArrival = curTick();
+
     // we should never get a new request after committing to retry the
     // current one, the bus violates the rule as it simply sends a
     // retry to the next one waiting on the retry list, so simply
@@ -142,6 +153,12 @@ ScratchpadMemory::recvTimingReq(PacketPtr pkt)
             schedule(releaseEvent, curTick() + duration);
             isBusy = true;
         }
+	// For statistics
+	if (pkt->isRead()) {
+	  readReqs++;
+	} else {
+	  writeReqs++;
+	}
     }
 
     // go ahead and deal with the packet and put the response in the
@@ -283,15 +300,23 @@ ScratchpadMemoryParams::create()
     return new ScratchpadMemory(this);
 }
 
-void
-ScratchpadMemory::regStats()
-{
-    using namespace Stats;
+// void
+// ScratchpadMemory::regStats()
+// {
+//     using namespace Stats;
 
-    AbstractMemory::regStats();
+//     AbstractMemory::regStats();
 
-    for (auto r : ranks) {
-        r->regStats();
-    }
+//     for (auto r : ranks) {
+//         r->regStats();
+//     }
 
-}
+//     readReqs
+//         .name(name() + ".readReqs")
+//         .desc("Number of read requests accepted");
+
+//     writeReqs
+//         .name(name() + ".writeReqs")
+//         .desc("Number of write requests accepted");
+
+// }

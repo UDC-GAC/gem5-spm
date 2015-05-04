@@ -2,6 +2,8 @@
  * Testing pseudo_instructions
  */
 
+#define KBYTE 1024
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "m5/m5op.h"
@@ -10,13 +12,14 @@ int main(int argc, char** argv)
 {
   printf("test\n");
 
-  int *p = (int *) malloc(1000);
+  long unsigned *p = (long unsigned *) malloc(KBYTE * KBYTE * 16);
 
-  *p = 1;
+  *p = p;
 
-  printf("%d\n", *p);
+  printf("addr: %lu (%x). content: %lu\n", p, p, *p);
+  
+  spm_malloc(*p);
 
   free(p);
   
-  //spm_malloc(4096);
 }
