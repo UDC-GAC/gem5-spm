@@ -742,12 +742,14 @@ spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 {
     DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
 
+    // This function return a vector of the physical memories of system
     const std::vector<std::pair<AddrRange, uint8_t*> > &memories(tc->getSystemPtr()->getPhysMem().getBackingStore());
+    // THIS IS A HACK: we know that SPM is the last memory (we can configure it in the Python script)
     const AddrRange &range(memories[memories.size()-1].first);
     void *pmem(memories[memories.size()-1].second);
 
     if (pmem) {
-      std::cout << "Mapping region: 0x" <<  pmem << " -> " << range.start() << " [size: 0x" << range.size()  << "]\n";
+      std::cout << "Mapping region: " <<  pmem << " -> " << range.start() << " [size: " << range.size()  << "]\n";
     }
 
     Addr VMPageSize = tc->getSystemPtr()->getPageBytes();
@@ -755,20 +757,26 @@ spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
     std::cout << "dir: " << vaddr << ". bytes:" << bytes
  << ". VMPage:" << VMPageSize << std::endl;
 
-    // translate virtual-physical
-    PageTableBase * pTable = tc->getProcessPtr()->pTable;
-    for (ChunkGenerator gen(vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
-       Addr paddr;
-       if (!pTable->translate(gen.addr(), paddr)) {
-     	assert( false && "Translate error" );
-       }
+    Process *proc = tc->getProcessPtr();
 
-       // Add range to tracked set and allocate to SPM.
-       Address address(paddr);
-       //assert( ((!set->isAddrPresent(address)) || (set->isAddrPresent(address) == spm)) && "Reallocating address in different SPM." );
-
-       std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
+    if (!proc->map(vaddr, (Addr) range.start(), bytes, false)) {
+	assert( false && "Translate error" );
+    } else {
+      std::cout << "YES!" << std::endl; 
     }
+    // translate virtual-physical
+    // PageTableBase * pTable = tc->getProcessPtr()->pTable;
+    // for (ChunkGenerator gen(vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
+    //    Addr paddr;
+    //    if (!pTable->translate(gen.addr(), paddr)) {
+    //  	
+    //    }
+
+    //    // Add range to tracked set and allocate to SPM.
+    //    Address address(paddr);
+
+    //    std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
+    // }
 
     return;
 }

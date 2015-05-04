@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 
   printf("addr: %lu (%x). content: %lu\n", p, p, *p);
   
-  spm_malloc(*p);
+  spm_malloc(*p, KBYTE*KBYTE*16);
 
   free(p);
   
