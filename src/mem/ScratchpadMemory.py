@@ -41,7 +41,7 @@ from m5.params import *
 from AbstractMemory import *
 from DRAMCtrl import *
 
-# BASED ON OWN IMPLEMENTATION
+# BASED ON OWN IMPLEMENTATION (SimpleMemory)
 
 #class ScratchpadMemory(AbstractMemory):
 #    type = 'ScratchpadMemory'
@@ -56,11 +56,15 @@ from DRAMCtrl import *
     # This memory will be managed by software, should it be on global map?
     # in_addr_map = False
 
-# BASED ON DRAMCtrl IMPLEMENTATION
+# BASED ON DRAMCtrl (1300MHz) IMPLEMENTATION
 
 class ScratchpadMemory(DRAMCtrl):
+
+    # This memory will be managed by software, should it be on global map?
+    in_addr_map = False
+
     # size of device in bytes
-    device_size = '8MB'
+    device_size = '32MB'
 
     # 8x8 configuration, 8 devices each with an 8-bit interface
     device_bus_width = 8

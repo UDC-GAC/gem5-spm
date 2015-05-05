@@ -734,7 +734,7 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
     }
 }
 
-//
+// @TODO
 // Implementation memory allocation function SPM
 //
 void
@@ -752,36 +752,39 @@ spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
       std::cout << "Mapping region: " <<  pmem << " -> " << range.start() << " [size: " << range.size()  << "]\n";
     }
 
+    // Virtual Memory page size
     Addr VMPageSize = tc->getSystemPtr()->getPageBytes();
 
-    std::cout << "dir: " << vaddr << ". bytes:" << bytes
- << ". VMPage:" << VMPageSize << std::endl;
+    //std::cout << "dir: " << vaddr << ". bytes:" << bytes << ". VMPage:" << VMPageSize << std::endl;
 
     Process *proc = tc->getProcessPtr();
 
-    if (!proc->map(vaddr, (Addr) range.start(), bytes, false)) {
-	assert( false && "Translate error" );
-    } else {
-      std::cout << "YES!" << std::endl; 
-    }
+    Addr paddr = (Addr) range.start();
+
     // translate virtual-physical
-    // PageTableBase * pTable = tc->getProcessPtr()->pTable;
-    // for (ChunkGenerator gen(vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
-    //    Addr paddr;
-    //    if (!pTable->translate(gen.addr(), paddr)) {
-    //  	
-    //    }
+    PageTableBase * pTable = tc->getProcessPtr()->pTable;
+    for (ChunkGenerator gen(vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
+      std::cout << "addr (gen): " << gen.addr() << std::endl;
+      std::cout << "addr size (gen): " << gen.size() << std::endl;
+      std::cout << "pmem size (gen): " << paddr << std::endl;
+      long unsigned left = gen.addr() % VMPageSize;
+      std::cout << "left: " << left << std::endl;
+      std::cout << "align: " << pTable->pageAlign(gen.addr()) << std::endl;
+      if (!proc->map(pTable->pageAlign(gen.addr()), paddr, gen.size(), true)) {
+	assert( false && "Translate error" );
+      } else {
+	std::cout << "YES!" << std::endl; 
+      }
 
-    //    // Add range to tracked set and allocate to SPM.
-    //    Address address(paddr);
+      paddr += VMPageSize;
 
-    //    std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
-    // }
+      std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
+    }
 
     return;
 }
 
-//
+// @TODO
 // This function loads a line from memory to scratchpad
 //
 void
@@ -795,7 +798,7 @@ spmLoad(ThreadContext *tc, uint64_t bytes)
 
 }
 
-//
+// @TODO
 // This function stores a line from scratchpad to memory
 //
 void
