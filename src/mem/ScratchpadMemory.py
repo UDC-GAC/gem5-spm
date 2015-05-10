@@ -61,7 +61,7 @@ from DRAMCtrl import *
 class ScratchpadMemory(DRAMCtrl):
 
     # This memory will be managed by software, should it be on global map?
-    in_addr_map = False
+    in_addr_map = True
 
     # size of device in bytes
     device_size = '32MB'

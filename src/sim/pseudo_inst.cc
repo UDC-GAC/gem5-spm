@@ -740,13 +740,15 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 void
 spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 {
-    DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
+    DPRINTF(SPM, "PseudoInst::spmMalloc()\n");
 
     // This function return a vector of the physical memories of system
     const std::vector<std::pair<AddrRange, uint8_t*> > &memories(tc->getSystemPtr()->getPhysMem().getBackingStore());
     // THIS IS A HACK: we know that SPM is the last memory (we can configure it in the Python script)
     const AddrRange &range(memories[memories.size()-1].first);
     void *pmem(memories[memories.size()-1].second);
+
+    std::cout << "SIZE MEMORIES: " << memories.size() << std::endl;
 
     if (pmem) {
       std::cout << "Mapping region: " <<  pmem << " -> " << range.start() << " [size: " << range.size()  << "]\n";
@@ -790,7 +792,7 @@ spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 void
 spmLoad(ThreadContext *tc, uint64_t bytes)
 {
-    DPRINTF(PseudoInst, "PseudoInst::spmLoad()\n");
+    DPRINTF(SPM, "PseudoInst::spmLoad()\n");
 
     //BaseCPU *cpu = tc->getCpuPtr();
 
@@ -804,7 +806,7 @@ spmLoad(ThreadContext *tc, uint64_t bytes)
 void
 spmStore(ThreadContext *tc, uint64_t bytes)
 {
-    DPRINTF(PseudoInst, "PseudoInst::spmStore()\n");
+    DPRINTF(SPM, "PseudoInst::spmStore()\n");
 
     //BaseCPU *cpu = tc->getCpuPtr();
 
