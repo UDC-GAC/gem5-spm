@@ -4,22 +4,32 @@
 
 #define KBYTE 1024
 
+#define DEBUG 1
+
+#include <sys/types.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
 #include "m5/m5op.h"
 
 int main(int argc, char** argv)
 {
-  printf("test\n");
+  printf("test program start\n");
 
-  long unsigned *p = (long unsigned *) malloc(KBYTE * KBYTE * 16);
+  int *p = (int *) spm_malloc(0, sizeof(int)*KBYTE);
 
-  *p = p;
+  int i = 0;
 
-  printf("addr: %lu (%x). content: %lu\n", p, p, *p);
-  
-  spm_malloc(*p, KBYTE*KBYTE*16);
+  if (DEBUG)
+    printf("El puntero vaddr, tiene la dirección: %lu\n", p);
 
-  free(p);
+  for (i=0; i<KBYTE; i++) {
+    p[i] = i;
+    if (DEBUG) 
+      printf("dir: %lu\n", &p[i]);
+  }
+
+  printf("test program finish\n");
   
 }

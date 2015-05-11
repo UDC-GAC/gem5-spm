@@ -737,22 +737,19 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 // @TODO
 // Implementation memory allocation function SPM
 //
-void
+uint64_t
 spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 {
-    DPRINTF(SPM, "PseudoInst::spmMalloc()\n");
+    DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
 
     // This function return a vector of the physical memories of system
     const std::vector<std::pair<AddrRange, uint8_t*> > &memories(tc->getSystemPtr()->getPhysMem().getBackingStore());
     // THIS IS A HACK: we know that SPM is the last memory (we can configure it in the Python script)
     const AddrRange &range(memories[memories.size()-1].first);
-    void *pmem(memories[memories.size()-1].second);
+    // Pointer to host memory used to implement SPM
+    //void *pmem(memories[memories.size()-1].second);
 
-    std::cout << "SIZE MEMORIES: " << memories.size() << std::endl;
-
-    if (pmem) {
-      std::cout << "Mapping region: " <<  pmem << " -> " << range.start() << " [size: " << range.size()  << "]\n";
-    }
+    //std::cout << "SIZE MEMORIES: " << memories.size() << std::endl;
 
     // Virtual Memory page size
     Addr VMPageSize = tc->getSystemPtr()->getPageBytes();
@@ -763,27 +760,51 @@ spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 
     Addr paddr = (Addr) range.start();
 
+    void *p = (void *) malloc(bytes);
+
     // translate virtual-physical
     PageTableBase * pTable = tc->getProcessPtr()->pTable;
-    for (ChunkGenerator gen(vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
-      std::cout << "addr (gen): " << gen.addr() << std::endl;
-      std::cout << "addr size (gen): " << gen.size() << std::endl;
-      std::cout << "pmem size (gen): " << paddr << std::endl;
-      long unsigned left = gen.addr() % VMPageSize;
-      std::cout << "left: " << left << std::endl;
-      std::cout << "align: " << pTable->pageAlign(gen.addr()) << std::endl;
-      if (!proc->map(pTable->pageAlign(gen.addr()), paddr, gen.size(), true)) {
-	assert( false && "Translate error" );
-      } else {
-	std::cout << "YES!" << std::endl; 
+    for (ChunkGenerator gen((Addr) p, bytes, VMPageSize); !gen.done(); gen.next()) {
+      //std::cout << "addr (gen): " << gen.addr() << std::endl;
+      //std::cout << "addr size (gen): " << gen.size() << std::endl;
+      //std::cout << "pmem size (gen): " << paddr << std::endl;
+      //long unsigned left = gen.addr() % VMPageSize;
+      //std::cout << "left: " << left << std::endl;
+      //std::cout << "align: " << pTable->pageAlign(gen.addr()) << std::endl;
+
+      if (!proc->map(pTable->pageAlign(gen.addr()), paddr, VMPageSize, true)) {
+        fatal("Translate error");
       }
+      std::cout << "Mapped: " << gen.addr() << " onto " << paddr << std::endl; 
 
       paddr += VMPageSize;
 
-      std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
+      //std::cout << "\tAllocated physical addr: " << paddr << " + " << VMPageSize << "\n";
     }
 
-    return;
+// PageTable * pTable = tc->getProcessPtr()->pTable;
+//   for( ChunkGenerator gen( vaddr, size, VMPageSize ); !gen.done(); gen.next() ) {
+//     Addr paddr;
+//     if( !pTable->translate( gen.addr(), paddr ) ) {
+//       assert( false && "Translate error" );
+//     }
+    
+//     // Add range to tracked set and allocate to SPM.
+//     Address address( paddr );
+//     assert( ((!set->isAddrPresent(address)) || (set->isAddrPresent(address) == spm)) && "Reallocating address in different SPM." );
+//     spm->allocate( address, gen.size() );
+//     std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
+//   }
+
+    std::cout << "Puntero p: " << p << std::endl;
+    std::cout << "Puntero p: " << (uint64_t) p << std::endl;
+    // std::cout << "Contenido puntero p: " << *p << std::endl;
+
+    uint64_t virtaddr = (uint64_t) p;
+
+    std::cout << "Dirección vaddr: " << virtaddr << std::endl;
+
+    return virtaddr;
 }
 
 // @TODO
@@ -792,9 +813,7 @@ spmMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 void
 spmLoad(ThreadContext *tc, uint64_t bytes)
 {
-    DPRINTF(SPM, "PseudoInst::spmLoad()\n");
-
-    //BaseCPU *cpu = tc->getCpuPtr();
+    DPRINTF(PseudoInst, "PseudoInst::spmLoad()\n");
 
     return;
 
@@ -806,9 +825,7 @@ spmLoad(ThreadContext *tc, uint64_t bytes)
 void
 spmStore(ThreadContext *tc, uint64_t bytes)
 {
-    DPRINTF(SPM, "PseudoInst::spmStore()\n");
-
-    //BaseCPU *cpu = tc->getCpuPtr();
+    DPRINTF(PseudoInst, "PseudoInst::spmStore()\n");
 
     return;
 

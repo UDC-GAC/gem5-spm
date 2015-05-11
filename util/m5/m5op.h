@@ -80,7 +80,7 @@ void m5a_identify(uint64_t id);
 uint64_t m5a_getid(void);
 
 // pseudo instructions made for SPM
-void *spm_malloc(uint64_t vaddr, uint64_t bytes);
+uint64_t spm_malloc(uint64_t vaddr, uint64_t bytes);
 //void *spm_load();
 //void *spm_store();
 
