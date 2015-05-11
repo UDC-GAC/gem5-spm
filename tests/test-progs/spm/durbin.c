@@ -1,10 +1,11 @@
-/**
+/*
  * durbin.c: This file is part of the PolyBench/C 3.2 test suite.
  *
  *
  * Contact: Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
  * Web address: http://polybench.sourceforge.net
  */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -47,7 +48,6 @@ void init_array (int n,
 static
 void print_array(int n,
 		 DATA_TYPE POLYBENCH_1D(out,N,n))
-
 {
   int i;
 
@@ -97,8 +97,6 @@ int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
   int n = N;
-
-  spm_malloc(-1);
 
   /* Variable declaration/allocation. */
   POLYBENCH_2D_ARRAY_DECL(y, DATA_TYPE, N, N, n, n);

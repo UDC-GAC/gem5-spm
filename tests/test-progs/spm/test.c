@@ -1,4 +1,8 @@
 /*
+ * Universidade da Coruña. 2015
+ *
+ * Marcos Horro Varela
+ *
  * Testing pseudo_instructions
  */
 
@@ -17,12 +21,12 @@ int main(int argc, char** argv)
 {
   printf("test program start\n");
 
-  int *p = (int *) spm_malloc(0, sizeof(int)*KBYTE);
+  int *p = (int *) spm_malloc(sizeof(int)*KBYTE);
 
   int i = 0;
 
   if (DEBUG)
-    printf("El puntero vaddr, tiene la dirección: %lu\n", p);
+    printf("Virtual address pointer vaddr: %lu\n", p);
 
   for (i=0; i<KBYTE; i++) {
     p[i] = i;
