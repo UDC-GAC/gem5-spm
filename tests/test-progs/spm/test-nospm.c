@@ -15,13 +15,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
-#include "m5/m5op.h"
 
 int main(int argc, char** argv)
 {
   printf("test program start\n");
 
-  int *p = (int *) spm_malloc(sizeof(int)*KBYTE*KBYTE*2);
+  int *p = (int *) malloc(sizeof(int)*KBYTE*KBYTE*2);
 
   int i = 0;
 
