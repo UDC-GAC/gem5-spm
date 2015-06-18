@@ -230,12 +230,6 @@
                     0xb0: spm_malloc({{
                         Rax = PseudoInst::spmMalloc(xc->tcBase(), Rdi);
                     }}, IsNonSpeculative);
-//                  0xb1: spm_load({{
-//                      PseudoInst::spmLoad(?, Rdi);
-//                  }}, IsNonSpeculative);
-//                  0xb2: spm_store({{
-//                      PseudoInst::spmStore(?, Rdi);
-//                  }}, IsNonSpeculative);
                     default: Inst::UD2();
                 }
             }

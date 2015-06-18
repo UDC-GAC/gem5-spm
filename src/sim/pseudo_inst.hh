@@ -90,8 +90,6 @@ void workbegin(ThreadContext *tc, uint64_t workid, uint64_t threadid);
 void workend(ThreadContext *tc, uint64_t workid, uint64_t threadid);
 // Functions implemented for SPM
 uint64_t spmMalloc(ThreadContext *tc, uint64_t bytes);
-void spmLoad(ThreadContext *tc, uint64_t bytes);
-void spmStore(ThreadContext *tc, uint64_t bytes);
 } // namespace PseudoInst
 
 #endif // __SIM_PSEUDO_INST_HH__

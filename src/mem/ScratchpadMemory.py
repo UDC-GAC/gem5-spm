@@ -85,37 +85,37 @@ class ScratchpadMemory(DRAMCtrl):
     banks_per_rank = 8
 
     # 1600 MHz
-    tCK = '0.625ns'
+    tCK = '0.5ns'
 
     # 8 beats across an x64 interface translates to 4 clocks @ 800 MHz
-    tBURST = '5ns'
+    tBURST = '4ns'
 
     # DDR3-1600 11-11-11
-    tRCD = '10ns'
-    tCL = '10ns'
-    tRP = '10ns'
-    tRAS = '35ns'
-    tRRD = '4ns'
-    tXAW = '25ns'
+    tRCD = '9ns'
+    tCL = '9ns'
+    tRP = '9ns'
+    tRAS = '30ns'
+    tRRD = '3ns'
+    tXAW = '20ns'
     activation_limit = 4
-    tRFC = '200ns'
+    tRFC = '150ns'
 
-    tWR = '10ns'
-
-    # Greater of 4 CK or 7.5 ns
-    tWTR = '7ns'
+    tWR = '9ns'
 
     # Greater of 4 CK or 7.5 ns
-    tRTP = '7ns'
+    tWTR = '6ns'
+
+    # Greater of 4 CK or 7.5 ns
+    tRTP = '6ns'
 
     # Default same rank rd-to-wr bus turnaround to 2 CK, @800 MHz = 2.5 ns
-    tRTW = '2ns'
+    tRTW = '1ns'
 
     # Default different rank bus delay to 2 CK, @800 MHz = 2.5 ns
-    tCS = '2ns'
+    tCS = '1ns'
 
     # <=85C, half for >85C
-    tREFI = '7us'
+    tREFI = '6us'
 
     # Current values from datasheet
     IDD0 = '75mA'

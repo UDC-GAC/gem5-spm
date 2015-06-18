@@ -7,7 +7,7 @@
  */
 
 #define KBYTE 1024
-
+#define MBYTE 1024*1024
 #define DEBUG 1
 
 #include <sys/types.h>
@@ -20,8 +20,8 @@
 int main(int argc, char** argv)
 {
   printf("test program start\n");
-
-  int *p = (int *) spm_malloc(sizeof(int)*KBYTE*KBYTE*2);
+  
+  int *p = (int *) spm_malloc(sizeof(int)*MBYTE*2);
 
   int i = 0;
 

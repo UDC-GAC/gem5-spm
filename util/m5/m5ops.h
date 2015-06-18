@@ -86,5 +86,3 @@
 
 // pseudo instructions made for SPM
 #define spmmalloc_func    0xb0
-#define spmload_func      0xb1
-#define spmstore_func     0xb2

@@ -759,8 +759,9 @@ spmMalloc(ThreadContext *tc, uint64_t bytes)
 
     // @TODO
     // - Handle errors
-    // - Check physical address' availability
-    // - Granularity
+    // - Check physical address' availability.
+    //        * I am not sure of this
+    // - Granularity WTF????
 
     // This function return a vector of the physical memories of system
     const std::vector<std::pair<AddrRange, uint8_t*> > &memories(tc->getSystemPtr()->getPhysMem().getBackingStore());
@@ -788,30 +789,6 @@ spmMalloc(ThreadContext *tc, uint64_t bytes)
     }
 
     return (uint64_t) vaddr;
-}
-
-// @TODO
-// This function loads a line from memory to scratchpad
-//
-void
-spmLoad(ThreadContext *tc, uint64_t bytes)
-{
-    DPRINTF(PseudoInst, "PseudoInst::spmLoad()\n");
-
-    return;
-
-}
-
-// @TODO
-// This function stores a line from scratchpad to memory
-//
-void
-spmStore(ThreadContext *tc, uint64_t bytes)
-{
-    DPRINTF(PseudoInst, "PseudoInst::spmStore()\n");
-
-    return;
-
 }
 
 } // namespace PseudoInst
