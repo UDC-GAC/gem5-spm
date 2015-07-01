@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 {
   printf("test program start\n");
   
-  int *p = (int *) spm_malloc(sizeof(int)*MBYTE*2);
+  int *p = (int *) spm_malloc(sizeof(int)*MBYTE*2, 1);
 
   int i = 0;
 

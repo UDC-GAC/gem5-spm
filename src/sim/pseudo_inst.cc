@@ -74,7 +74,6 @@
 #include "sim/stats.hh"
 #include "sim/system.hh"
 #include "sim/vptr.hh"
-//#include "mem/spm_mem.hh"
 
 #include "base/chunk_generator.hh"
 #include "mem/ruby/common/Address.hh"
@@ -215,15 +214,7 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
 
       /* SPM functions */
       case 0xb0: // SPM memory allocation function
-        spmMalloc(tc, args[0]);
-        break;
-
-      case 0xb1: // SPM load function
-        spmLoad(tc, args[0]);
-        break;
-
-      case 0xb2: // SPM store function
-        spmStore(tc, args[0]);
+        spmMalloc(tc, args[0], args[1]);
         break;
 
       default:
@@ -738,7 +729,7 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 // Implementation memory allocation function SPM
 //
 uint64_t
-spmMalloc(ThreadContext *tc, uint64_t bytes)
+spmMalloc(ThreadContext *tc, uint64_t bytes, uint64_t spm_n)
 {
     DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
 
@@ -759,14 +750,12 @@ spmMalloc(ThreadContext *tc, uint64_t bytes)
 
     // @TODO
     // - Handle errors
-    // - Check physical address' availability.
-    //        * I am not sure of this
     // - Granularity WTF????
 
     // This function return a vector of the physical memories of system
     const std::vector<std::pair<AddrRange, uint8_t*> > &memories(tc->getSystemPtr()->getPhysMem().getBackingStore());
-    // THIS IS A HACK: we know that SPM is the last memory (we can configure it in the Python script)
-    const AddrRange &range(memories[memories.size()-1].first);
+    // THIS IS A HACK: we know that there is only one Main Memory -> so we can numerate SPM with its SPM_N (starting in 1)
+    const AddrRange &range(memories[spm_n].first);
 
     // Virtual Memory page size
     Addr VMPageSize = tc->getSystemPtr()->getPageBytes();

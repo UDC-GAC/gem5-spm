@@ -43,9 +43,22 @@ import m5
 from m5.objects import *
 
 def config_spm(options, system):
-    if options.scratchpad:
-        s = options.spm_size
-        spm = ScratchpadMemory()
-        spm.range = m5.objects.AddrRange(start = options.mem_size, size = s)
-        system.spm = spm
-        system.spm.port = system.membus.master
+    if (options.scratchpad >= 1):
+        addr_start = options.mem_size
+        for i in range (1, options.scratchpad+1):
+            spm_size = getattr(options, "spm_size_" + `i`)
+            spm = ScratchpadMemory()
+            spm.range = m5.objects.AddrRange(start = addr_start, size = spm_size)
+            addr_start += spm_size
+            spm.port = system.membus.master
+            setattr(system, "spm_" + `i`, spm)
+
+
+# def config_spm(options, system):
+#     if options.scratchpad==1:
+#         s = options.spm_size_1
+#         spm = ScratchpadMemory()
+#         spm.range = m5.objects.AddrRange(start = options.mem_size, size = s)
+#         system.spm = spm
+#         system.spm.port = system.membus.master
+ 

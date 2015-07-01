@@ -40,88 +40,91 @@
 from m5.params import *
 from AbstractMemory import *
 from DRAMCtrl import *
+from SimpleMemory import *
 
 # BASED ON OWN IMPLEMENTATION (SimpleMemory)
+# Gabriel commented to inherit from SimpleMemory
 
-#class ScratchpadMemory(AbstractMemory):
-#    type = 'ScratchpadMemory'
-#    cxx_header = "mem/spm_mem.hh"
-#    port = SlavePort("Slave ports")
-#    latency_read = Param.Latency('10ns', "Request to response latency")
-#    latency_read_var = Param.Latency('5ns', "Variable latency when reading")
+# Simple memory: 30ns and 0ns. Bandwith=12.8GB/s (DDR3-1600)
 
-#    bandwidth = Param.MemoryBandwidth('12.8GB/s',
-#                                      "Combined read and write bandwidth")
+class ScratchpadMemory(SimpleMemory):
+   cxx_header = "mem/simple_mem.hh"
+   port = SlavePort("Slave ports")
+   latency_read = Param.Latency('8ns', "Request to response latency")
+   latency_read_var = Param.Latency('2ns', "Variable latency when reading")
+
+   bandwidth = Param.MemoryBandwidth('12.8GB/s',
+                                     "Combined read and write bandwidth")
 
     # This memory will be managed by software, should it be on global map?
     # in_addr_map = False
 
 # BASED ON DRAMCtrl (1300MHz) IMPLEMENTATION
 
-class ScratchpadMemory(DRAMCtrl):
+# class ScratchpadMemory(DRAMCtrl):
 
-    # This memory will be managed by software, should it be on global map?
-    in_addr_map = True
+#     # This memory will be managed by software, should it be on global map?
+#     in_addr_map = True
 
-    # size of device in bytes
-    device_size = '32MB'
+#     # size of device in bytes
+#     device_size = '32MB'
 
-    # 8x8 configuration, 8 devices each with an 8-bit interface
-    device_bus_width = 8
+#     # 8x8 configuration, 8 devices each with an 8-bit interface
+#     device_bus_width = 8
 
-    # DDR3 is a BL8 device
-    burst_length = 8
+#     # DDR3 is a BL8 device
+#     burst_length = 8
 
-    # Each device has a page (row buffer) size of 1 Kbyte (1K columns x8)
-    device_rowbuffer_size = '1kB'
+#     # Each device has a page (row buffer) size of 1 Kbyte (1K columns x8)
+#     device_rowbuffer_size = '1kB'
 
-    # 8x8 configuration, so 8 devices
-    devices_per_rank = 8
+#     # 8x8 configuration, so 8 devices
+#     devices_per_rank = 8
 
-    # Use two ranks
-    ranks_per_channel = 1
+#     # Use two ranks
+#     ranks_per_channel = 1
 
-    # DDR3 has 8 banks in all configurations
-    banks_per_rank = 8
+#     # DDR3 has 8 banks in all configurations
+#     banks_per_rank = 8
 
-    # 1600 MHz
-    tCK = '0.5ns'
+#     # 1600 MHz
+#     tCK = '0.5ns'
 
-    # 8 beats across an x64 interface translates to 4 clocks @ 800 MHz
-    tBURST = '4ns'
+#     # 8 beats across an x64 interface translates to 4 clocks @ 800 MHz
+#     tBURST = '4ns'
 
-    # DDR3-1600 11-11-11
-    tRCD = '9ns'
-    tCL = '9ns'
-    tRP = '9ns'
-    tRAS = '30ns'
-    tRRD = '3ns'
-    tXAW = '20ns'
-    activation_limit = 4
-    tRFC = '150ns'
+#     # DDR3-1600 11-11-11
+#     tRCD = '9ns'
+#     tCL = '9ns'
+#     tRP = '9ns'
+#     tRAS = '30ns'
+#     tRRD = '3ns'
+#     tXAW = '20ns'
+#     activation_limit = 4
+#     tRFC = '150ns'
 
-    tWR = '9ns'
+#     tWR = '9ns'
 
-    # Greater of 4 CK or 7.5 ns
-    tWTR = '6ns'
+#     # Greater of 4 CK or 7.5 ns
+#     tWTR = '6ns'
 
-    # Greater of 4 CK or 7.5 ns
-    tRTP = '6ns'
+#     # Greater of 4 CK or 7.5 ns
+#     tRTP = '6ns'
 
-    # Default same rank rd-to-wr bus turnaround to 2 CK, @800 MHz = 2.5 ns
-    tRTW = '1ns'
+#     # Default same rank rd-to-wr bus turnaround to 2 CK, @800 MHz = 2.5 ns
+#     tRTW = '1ns'
 
-    # Default different rank bus delay to 2 CK, @800 MHz = 2.5 ns
-    tCS = '1ns'
+#     # Default different rank bus delay to 2 CK, @800 MHz = 2.5 ns
+#     tCS = '1ns'
 
-    # <=85C, half for >85C
-    tREFI = '6us'
+#     # <=85C, half for >85C
+#     tREFI = '6us'
 
-    # Current values from datasheet
-    IDD0 = '75mA'
-    IDD2N = '50mA'
-    IDD3N = '57mA'
-    IDD4W = '165mA'
-    IDD4R = '187mA'
-    IDD5 = '220mA'
-    VDD = '1.5V'
+#     # Current values from datasheet
+#     IDD0 = '75mA'
+#     IDD2N = '50mA'
+#     IDD3N = '57mA'
+#     IDD4W = '165mA'
+#     IDD4R = '187mA'
+#     IDD5 = '220mA'
+#     VDD = '1.5V'

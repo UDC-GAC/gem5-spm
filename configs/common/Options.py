@@ -95,10 +95,17 @@ def addCommonOptions(parser):
     parser.add_option("--mem-size", action="store", type="string",
                       default="512MB",
                       help="Specify the physical memory size (single memory)")
-    parser.add_option("--scratchpad", action="store_true", help="Enable scratchpad memory")
-    parser.add_option("--spm-size", action="store", type="string", 
+    parser.add_option("--scratchpad", type="int", help="Enable scratchpad memory",
+                      default=None)
+    parser.add_option("--spm-size-1", action="store", type="string", 
                       default="8MB",
-                      help = "Specify the physical scratchpad memory size")
+                      help = "Specify the physical scratchpad memory size (1)")
+    parser.add_option("--spm-size-2", action="store", type="string", 
+                      default="8MB",
+                      help = "Specify the physical scratchpad memory size (2)")
+    parser.add_option("--spm-size-3", action="store", type="string", 
+                      default="8MB",
+                      help = "Specify the physical scratchpad memory size (3)")
 
     parser.add_option("-l", "--lpae", action="store_true")
     parser.add_option("-V", "--virtualisation", action="store_true")

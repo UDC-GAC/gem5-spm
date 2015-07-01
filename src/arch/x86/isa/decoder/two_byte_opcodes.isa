@@ -228,7 +228,7 @@
                         PseudoInst::workend(xc->tcBase(), Rdi, Rsi);
                     }}, IsNonSpeculative);
                     0xb0: spm_malloc({{
-                        Rax = PseudoInst::spmMalloc(xc->tcBase(), Rdi);
+                        Rax = PseudoInst::spmMalloc(xc->tcBase(), Rdi, Rsi);
                     }}, IsNonSpeculative);
                     default: Inst::UD2();
                 }
