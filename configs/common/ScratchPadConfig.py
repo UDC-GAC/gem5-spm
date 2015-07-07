@@ -47,9 +47,13 @@ def config_spm(options, system):
         addr_start = options.mem_size
         for i in range (1, options.scratchpad+1):
             spm_size = getattr(options, "spm_size_" + `i`)
-            spm = ScratchpadMemory()
+            spm_type = getattr(options, "spm_type_" + `i`)
+            if (spm_type==1):
+                spm = ScratchpadMemory()
+            else:
+                spm = ScratchpadMemoryDP()
             spm.range = m5.objects.AddrRange(start = addr_start, size = spm_size)
-            addr_start += spm_size
+            addr_start = spm.range.end + 1
             spm.port = system.membus.master
             setattr(system, "spm_" + `i`, spm)
 
