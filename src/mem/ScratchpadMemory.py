@@ -1,4 +1,5 @@
-# Copyright (c) 2015. Universidade da Coruña 2015.
+#
+# Copyright (c) 2015. Universidade da Coruna 2015.
 #
 # Authors: Markos Horro
 
@@ -11,7 +12,7 @@ from SimpleMemory import *
 
 # ORIGINAL Simple memory: 30ns and 0ns. Bandwith=12.8GB/s (DDR3-1600)
 class ScratchpadMemory(SimpleMemory):
-   cxx_header = "mem/simple_mem.hh"
+   cxx_header = "mem/spm_mem.hh"
    port = SlavePort("Slave ports")
    latency_read = Param.Latency('8ns', "Request to response latency")
    latency_read_var = Param.Latency('2ns', "Variable latency when reading")
@@ -21,7 +22,7 @@ class ScratchpadMemory(SimpleMemory):
 
 # SPM low latency
 class ScratchpadMemoryLL(SimpleMemory):
-   cxx_header = "mem/simple_mem.hh"
+   cxx_header = "mem/spm_mem.hh"
    port = SlavePort("Slave ports")
    latency_read = Param.Latency('4ns', "Request to response latency")
    latency_read_var = Param.Latency('1ns', "Variable latency when reading")

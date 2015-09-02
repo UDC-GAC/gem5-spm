@@ -106,7 +106,8 @@ def addCommonOptions(parser):
     parser.add_option("--spm-size-3", action="store", type="string", 
                       default="8MB",
                       help = "Specify the physical scratchpad memory size (3)")
-    parser.add_option("--spm-type-1", type="int", default=1) # Type 1 = single port, Type 2 = multi port
+    # Type 1 = low latency write, Type 2 = low latency read, Type 3 = DRAM based
+    parser.add_option("--spm-type-1", type="int", default=1)
     parser.add_option("--spm-type-2", type="int", default=1)
     parser.add_option("--spm-type-3", type="int", default=1)
 

@@ -80,17 +80,13 @@ static
 void kernel_2mm(int ni, int nj, int nk, int nl,
 		DATA_TYPE alpha,
 		DATA_TYPE beta,
-		DATA_TYPE POLYBENCH_2D(tmp,NI,NJ,ni,nj),
-		DATA_TYPE POLYBENCH_2D(A,NI,NK,ni,nk),
-		DATA_TYPE POLYBENCH_2D(B,NK,NJ,nk,nj),
-		DATA_TYPE POLYBENCH_2D(C,NL,NJ,nl,nj),
-		DATA_TYPE POLYBENCH_2D(D,NI,NL,ni,nl))
+		DATA_TYPE *tmp,
+		DATA_TYPE *A,
+		DATA_TYPE *B,
+		DATA_TYPE *C,
+		DATA_TYPE *D)
 {
   int i, j, k;
-
-  double *p_read = (double *) spm_malloc(SPM_SIZE_1, SPM_1);
-  double *p_read_write = (double *) spm_malloc(SPM_SIZE_2, SPM_2);
-  double *p_read_write_2 = (double *) spm_malloc(SPM_SIZE_3, SPM_3);
 
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
@@ -120,9 +116,16 @@ int main(int argc, char** argv)
   int nk = NK;
   int nl = NL;
 
+  double *p_read = (double *) spm_malloc(SPM_SIZE_1, SPM_1);
+  double *p_read_write = (double *) spm_malloc(SPM_SIZE_2, SPM_2);
+  double *p_read_write_2 = (double *) spm_malloc(SPM_SIZE_3, SPM_3);
+
   /* Variable declaration/allocation. */
   DATA_TYPE alpha;
-  DATA_TYPE beta;
+  DATA_TYPE beta; 
+
+  double *B[NJ] = (double *) malloc();
+
   POLYBENCH_2D_ARRAY_DECL(tmp,DATA_TYPE,NI,NJ,ni,nj);
   POLYBENCH_2D_ARRAY_DECL(A,DATA_TYPE,NI,NK,ni,nk);
   POLYBENCH_2D_ARRAY_DECL(B,DATA_TYPE,NK,NJ,nk,nj);

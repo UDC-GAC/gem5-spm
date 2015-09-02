@@ -10,7 +10,7 @@
 
 /* Default to STANDARD_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
-#  define STANDARD_DATASET
+#  define MINI_DATASET
 # endif
 
 /* Do not define anything if the user manually defines the size. */
@@ -21,6 +21,13 @@
 #   define NJ 32
 #   define NK 32
 #   define NL 32
+#  endif
+
+#  ifdef TINY_DATASET
+#   define NI 64
+#   define NJ 64
+#   define NK 64
+#   define NL 64
 #  endif
 
 #  ifdef SMALL_DATASET
@@ -51,16 +58,5 @@
 #   define NL 4000
 #  endif
 # endif /* !N */
-
-# define _PB_NI POLYBENCH_LOOP_BOUND(NI,ni)
-# define _PB_NJ POLYBENCH_LOOP_BOUND(NJ,nj)
-# define _PB_NK POLYBENCH_LOOP_BOUND(NK,nk)
-# define _PB_NL POLYBENCH_LOOP_BOUND(NL,nl)
-
-# ifndef DATA_TYPE
-#  define DATA_TYPE double
-#  define DATA_PRINTF_MODIFIER "%0.2lf "
-# endif
-
 
 #endif /* !_2MM */

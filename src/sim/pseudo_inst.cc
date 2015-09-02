@@ -772,7 +772,7 @@ spmMalloc(ThreadContext *tc, uint64_t bytes, uint64_t spm_n)
       if (!proc->map(pTable->pageAlign(gen.addr()), paddr, VMPageSize, true)) {
         fatal("SpmMalloc: Translate error");
       }
-      DPRINTF(PseudoInst, "PseudoInst::spmMalloc(): %p mapped onto %p", gen.addr(), paddr); 
+      DPRINTF(PseudoInst, "PseudoInst::spmMalloc(): %p mapped onto %p\n", gen.addr(), paddr); 
 
       paddr += VMPageSize;
     }
