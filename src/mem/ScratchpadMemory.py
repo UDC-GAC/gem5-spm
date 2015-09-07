@@ -14,10 +14,10 @@ from SimpleMemory import *
 class ScratchpadMemory(SimpleMemory):
    cxx_header = "mem/spm_mem.hh"
    port = SlavePort("Slave ports")
-   latency_read = Param.Latency('8ns', "Request to response latency")
+   latency_read = Param.Latency('6ns', "Request to response latency")
    latency_read_var = Param.Latency('2ns', "Variable latency when reading")
 
-   bandwidth = Param.MemoryBandwidth('12.8GB/s',
+   bandwidth = Param.MemoryBandwidth('50GB/s',
                                      "Combined read and write bandwidth")
 
 # SPM low latency
@@ -27,7 +27,7 @@ class ScratchpadMemoryLL(SimpleMemory):
    latency_read = Param.Latency('4ns', "Request to response latency")
    latency_read_var = Param.Latency('1ns', "Variable latency when reading")
 
-   bandwidth = Param.MemoryBandwidth('20GB/s',
+   bandwidth = Param.MemoryBandwidth('128GB/s',
                                      "Combined read and write bandwidth")
 
 
@@ -37,4 +37,4 @@ class ScratchpadMemoryLL(SimpleMemory):
 # H5GQ1H24AFR) in a 2x32 configuration.
 class ScratchpadMemoryDRAM(GDDR5_4000_x64):
     # size of device
-    device_size = '8MB'
+    device_size = '256MB'
