@@ -562,6 +562,17 @@ Process::map(Addr vaddr, Addr paddr, int size, bool cacheable)
     return true;
 }
 
+bool
+Process::unmap(Addr vaddr, int size, bool cacheable)
+{
+    if (!pTable->isUnmapped(vaddr, size)) {
+        pTable->unmap(vaddr, size);
+	return true;
+    }
+
+    return false;
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 //

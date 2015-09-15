@@ -81,6 +81,7 @@ uint64_t m5a_getid(void);
 
 // pseudo instructions made for SPM
 uint64_t spm_malloc(uint64_t bytes, uint64_t spm_n);
+void spm_free(uint64_t vaddr, uint64_t bytes);
 
 #define M5_AN_FL_NONE   0x0
 #define M5_AN_FL_BAD    0x2

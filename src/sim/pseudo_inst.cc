@@ -217,6 +217,10 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         spmMalloc(tc, args[0], args[1]);
         break;
 
+      case 0xb1: // SPM memory free function
+        spmFree(tc, args[0], args[1]);
+        break;
+
       default:
         warn("Unhandled m5 op: 0x%x\n", func);
         break;
@@ -769,7 +773,7 @@ spmMalloc(ThreadContext *tc, uint64_t bytes, uint64_t spm_n)
     // translate virtual-physical
     PageTableBase * pTable = tc->getProcessPtr()->pTable;
     for (ChunkGenerator gen((Addr) vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
-      if (!proc->map(pTable->pageAlign(gen.addr()), paddr, VMPageSize, true)) {
+      if (!proc->map(pTable->pageAlign(gen.addr()), paddr, VMPageSize, false)) {
         fatal("SpmMalloc: Translate error");
       }
       DPRINTF(PseudoInst, "PseudoInst::spmMalloc(): %p mapped onto %p\n", gen.addr(), paddr); 
@@ -778,6 +782,23 @@ spmMalloc(ThreadContext *tc, uint64_t bytes, uint64_t spm_n)
     }
 
     return (uint64_t) vaddr;
+}
+
+// @TODO
+// Implementation memory free function SPM
+//
+void
+spmFree(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
+{
+    DPRINTF(PseudoInst, "PseudoInst::spmFree()\n");
+    
+    //Pointer to process
+    Process *proc = tc->getProcessPtr();
+    if (!proc->unmap(vaddr, bytes, false)) {
+	DPRINTF(PseudoInst, "PseudoInst::spmFree(): failed\n");
+    }
+
+    return;
 }
 
 } // namespace PseudoInst

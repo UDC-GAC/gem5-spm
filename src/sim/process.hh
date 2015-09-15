@@ -232,6 +232,7 @@ class Process : public SimObject
      *           point in time, the map operation always succeeds.)
      */
     bool map(Addr vaddr, Addr paddr, int size, bool cacheable = true);
+    bool unmap(Addr vaddr, int size, bool cacheable);
 
     void serialize(std::ostream &os);
     void unserialize(Checkpoint *cp, const std::string &section);
