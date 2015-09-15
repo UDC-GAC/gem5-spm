@@ -39,10 +39,10 @@ int main(int argc, char** argv)
   double *vaddr1 = (double *) spm_malloc(SPM_SIZE_1, SPM_1);
 
   double *tmp = vaddr1;
-  double *A = vaddr1 + KBYTE*sizeof(double);
-  double *B = A + KBYTE*sizeof(double);
-  double *C = B + KBYTE*sizeof(double);
-  double *D = C + KBYTE*sizeof(double);
+  double *A = vaddr1 + N*sizeof(double);
+  double *B = A + N*sizeof(double);
+  double *C = B + N*sizeof(double);
+  double *D = C + N*sizeof(double);
 
   /* Run kernel. */
   int i, j, k;
@@ -62,6 +62,7 @@ int main(int argc, char** argv)
     for (j = 0; j < nl; j++)
       D[i*nl+j] = ((double) i*(j+2)) / nk;
 
+  //m5_checkpoint(0,0);
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
   for (i = 0; i < NI; i++)
@@ -79,6 +80,7 @@ int main(int argc, char** argv)
 	  D[i*NL+j] += tmp[i*NK+k] * C[k*NJ+j];
       }
 #pragma endscop
+  //m5_dumpreset_stats(0,0);
 
   return 0;
 }
