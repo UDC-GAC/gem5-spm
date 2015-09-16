@@ -227,11 +227,11 @@
                     0x5b: m5_work_end({{
                         PseudoInst::workend(xc->tcBase(), Rdi, Rsi);
                     }}, IsNonSpeculative);
-                    0xb0: spm_malloc({{
-                        Rax = PseudoInst::spmMalloc(xc->tcBase(), Rdi, Rsi);
+                    0xb0: spm_internal_malloc({{
+                        PseudoInst::spmInternalMalloc(xc->tcBase(), Rdi, Rsi, Rdx);
                     }}, IsNonSpeculative);
-                    0xb1: spm_free({{
-                        Rax = PseudoInst::spmMalloc(xc->tcBase(), Rdi, Rsi);
+                    0xb1: spm_internal_free({{
+                        PseudoInst::spmInternalFree(xc->tcBase(), Rdi, Rsi);
                     }}, IsNonSpeculative);
                     default: Inst::UD2();
                 }

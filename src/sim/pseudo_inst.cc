@@ -214,11 +214,11 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
 
       /* SPM functions */
       case 0xb0: // SPM memory allocation function
-        spmMalloc(tc, args[0], args[1]);
+	spmInternalMalloc(tc, args[0], args[1], args[2]);
         break;
 
       case 0xb1: // SPM memory free function
-        spmFree(tc, args[0], args[1]);
+        spmInternalFree(tc, args[0], args[1]);
         break;
 
       default:
@@ -730,12 +730,16 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 }
 
 // @TODO
-// Implementation memory allocation function SPM
+// Implementation memory allocation function SPM - v1.0
 //
-uint64_t
-spmMalloc(ThreadContext *tc, uint64_t bytes, uint64_t spm_n)
+// Version: 0.1 - Allocates (malloc) bytes bytes on the spm
+//          0.2 - Allocates (malloc) bytes bytes on the spm spm_n
+//          1.0 - Maps vaddr to spm spm_n
+//
+void
+spmInternalMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes, uint64_t spm_n)
 {
-    DPRINTF(PseudoInst, "PseudoInst::spmMalloc()\n");
+    DPRINTF(PseudoInst, "PseudoInst::spmInternalMalloc()\n");
 
     // CODE GIVEN BY GABRIEL
     // PageTable * pTable = tc->getProcessPtr()->pTable;
@@ -752,10 +756,6 @@ spmMalloc(ThreadContext *tc, uint64_t bytes, uint64_t spm_n)
     //     std::cout << "\tAllocated physical addr: " << paddr << " + " << gen.size() << "\n";
     //   }
 
-    // @TODO
-    // - Handle errors
-    // - Granularity WTF????
-
     // This function return a vector of the physical memories of system
     const std::vector<std::pair<AddrRange, uint8_t*> > &memories(tc->getSystemPtr()->getPhysMem().getBackingStore());
     // THIS IS A HACK: we know that there is only one Main Memory -> so we can numerate SPM with its SPM_N (starting in 1)
@@ -767,35 +767,35 @@ spmMalloc(ThreadContext *tc, uint64_t bytes, uint64_t spm_n)
     Process *proc = tc->getProcessPtr();
     // Physical first address SPM
     Addr paddr = (Addr) range.start();
-    // Allocate bytes bytes
-    void *vaddr = (void *) malloc(bytes);
 
     // translate virtual-physical
     PageTableBase * pTable = tc->getProcessPtr()->pTable;
     for (ChunkGenerator gen((Addr) vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
       if (!proc->map(pTable->pageAlign(gen.addr()), paddr, VMPageSize, false)) {
-        fatal("SpmMalloc: Translate error");
+        fatal("SpmInternalMalloc: Translate error");
       }
-      DPRINTF(PseudoInst, "PseudoInst::spmMalloc(): %p mapped onto %p\n", gen.addr(), paddr); 
+      DPRINTF(PseudoInst, "PseudoInst::spmInternalMalloc(): %p mapped onto %p\n", gen.addr(), paddr); 
 
       paddr += VMPageSize;
     }
 
-    return (uint64_t) vaddr;
+    return;
 }
 
-// @TODO
+// 
 // Implementation memory free function SPM
 //
+// Version: 0.1 - Unmaps the mapped region
+//
 void
-spmFree(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
+spmInternalFree(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
 {
-    DPRINTF(PseudoInst, "PseudoInst::spmFree()\n");
+    DPRINTF(PseudoInst, "PseudoInst::spmInternalFree()\n");
     
     //Pointer to process
     Process *proc = tc->getProcessPtr();
     if (!proc->unmap(vaddr, bytes, false)) {
-	DPRINTF(PseudoInst, "PseudoInst::spmFree(): failed\n");
+	DPRINTF(PseudoInst, "PseudoInst::spmInternalFree(): failed\n");
     }
 
     return;

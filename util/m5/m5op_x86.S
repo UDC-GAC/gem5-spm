@@ -84,5 +84,5 @@ TWO_BYTE_OP(m5_panic, panic_func)
 TWO_BYTE_OP(m5_work_begin, work_begin_func)
 TWO_BYTE_OP(m5_work_end, work_end_func)
 // pseudo instructions for SPM
-TWO_BYTE_OP(spm_malloc, spmmalloc_func)
-TWO_BYTE_OP(spm_free, spmfree_func)
+TWO_BYTE_OP(spm_internal_malloc, spmmalloc_func)
+TWO_BYTE_OP(spm_internal_free, spmfree_func)
