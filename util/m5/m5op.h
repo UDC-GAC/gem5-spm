@@ -37,6 +37,8 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 void arm(uint64_t address);
 void quiesce(void);
@@ -80,16 +82,20 @@ void m5a_identify(uint64_t id);
 uint64_t m5a_getid(void);
 
 // pseudo instructions made for SPM
-uint64_t spm_malloc(uint64_t bytes, uint64_t spm_n)
+
+void spm_internal_malloc(uint64_t vaddr, uint64_t bytes, uint64_t spm_n);
+void spm_internal_free(uint64_t vaddr, uint64_t bytes);
+inline uint64_t spm_malloc(uint64_t bytes, uint64_t spm_n)
 {
-    void *p = malloc(bytes);
-    spm_internal_malloc(p, bytes, spm_n);
-    return p;
+    void *p = (void *) malloc(bytes);
+    posix_memalign(&p, 64, bytes);
+    spm_internal_malloc((uint64_t) p, bytes, spm_n);
+    return (uint64_t) p;
 };
-void spm_free(uint64_t vaddr, uint64_t bytes)
+inline void spm_free(uint64_t vaddr, uint64_t bytes)
 {
-    spm_internal_free(vaddr, bytes);
-    free(vaddr);
+    spm_internal_free((uint64_t) vaddr, bytes);
+    free((void *) vaddr);
 };
 
 #define M5_AN_FL_NONE   0x0

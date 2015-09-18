@@ -734,7 +734,7 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 //
 // Version: 0.1 - Allocates (malloc) bytes bytes on the spm
 //          0.2 - Allocates (malloc) bytes bytes on the spm spm_n
-//          1.0 - Maps vaddr to spm spm_n
+//          1.0 - Maps vaddr to spm spm_n (first we need to unmap)
 //
 void
 spmInternalMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes, uint64_t spm_n)
@@ -770,6 +770,16 @@ spmInternalMalloc(ThreadContext *tc, uint64_t vaddr, uint64_t bytes, uint64_t sp
 
     // translate virtual-physical
     PageTableBase * pTable = tc->getProcessPtr()->pTable;
+
+    // Unmap before mapping again: does this make sense? Does malloc know this?
+    // We want to malloc don't know this, we want to malloc to keep thinking this address is still reserved
+    pTable->unmap(pTable->pageAlign(vaddr), bytes+VMPageSize);
+    
+    // For debugging
+    if (pTable->isUnmapped(pTable->pageAlign(vaddr), bytes)) {
+	DPRINTF(PseudoInst, "NOT MAPPED: %p, %p\n", vaddr, vaddr+bytes);
+    }
+
     for (ChunkGenerator gen((Addr) vaddr, bytes, VMPageSize); !gen.done(); gen.next()) {
       if (!proc->map(pTable->pageAlign(gen.addr()), paddr, VMPageSize, false)) {
         fatal("SpmInternalMalloc: Translate error");
