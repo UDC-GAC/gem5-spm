@@ -82,13 +82,13 @@ void m5a_identify(uint64_t id);
 uint64_t m5a_getid(void);
 
 // pseudo instructions made for SPM
-
 void spm_internal_malloc(uint64_t vaddr, uint64_t bytes, uint64_t spm_n);
 void spm_internal_free(uint64_t vaddr, uint64_t bytes);
 inline uint64_t spm_malloc(uint64_t bytes, uint64_t spm_n)
 {
     void *p = (void *) malloc(bytes);
-    posix_memalign(&p, 64, bytes);
+    /* Assuming gem5 uses a page size of 4096 bytes */
+    posix_memalign(&p, 4096, bytes);
     spm_internal_malloc((uint64_t) p, bytes, spm_n);
     return (uint64_t) p;
 };
