@@ -804,7 +804,10 @@ spmInternalFree(ThreadContext *tc, uint64_t vaddr, uint64_t bytes)
     
     //Pointer to process
     Process *proc = tc->getProcessPtr();
-    if (!proc->unmap(vaddr, bytes, false)) {
+    
+    // translate virtual-physical
+    PageTableBase * pTable = tc->getProcessPtr()->pTable;   
+    if (!proc->unmap(pTable->pageAlign(vaddr), bytes, false)) {
 	DPRINTF(PseudoInst, "PseudoInst::spmInternalFree(): failed\n");
     }
 
