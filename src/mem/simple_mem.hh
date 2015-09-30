@@ -64,7 +64,7 @@
 class SimpleMemory : public AbstractMemory
 {
 
-  private:
+  protected:
 
     /**
      * A deferred packet stores a packet along with its scheduled
@@ -168,13 +168,6 @@ class SimpleMemory : public AbstractMemory
 
     EventWrapper<SimpleMemory, &SimpleMemory::dequeue> dequeueEvent;
 
-    /**
-     * Detemine the latency.
-     *
-     * @return the latency seen by the current packet
-     */
-    Tick getLatency() const;
-
     /** @todo this is a temporary workaround until the 4-phase code is
      * committed. upstream caches needs this packet until true is returned, so
      * hold onto it for deletion until a subsequent call
@@ -206,6 +199,14 @@ class SimpleMemory : public AbstractMemory
     bool recvTimingReq(PacketPtr pkt);
 
     void recvRespRetry();
+
+    /**
+     * Detemine the latency.
+     *
+     * @return the latency seen by the current packet
+     */
+    Tick getLatency() const;
+
 
 };
 
