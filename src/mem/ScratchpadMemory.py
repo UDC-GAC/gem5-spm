@@ -46,3 +46,20 @@ class ScratchpadMemoryDRAM(GDDR5_4000_x64):
     # Basically: frontend -> reads; backend -> reads and writes
     static_frontend_latency = Param.Latency("1ns", "Static frontend latency")
     static_backend_latency = Param.Latency("5ns", "Static backend latency")
+
+# BASED ON DRAMCtrl (1300MHz) IMPLEMENTATION.
+# A single GDDR5 x64 interface, with
+# default timings based on a GDDR5-4000 1 Gbit part (SK Hynix
+# H5GQ1H24AFR) in a 2x32 configuration.
+class ScratchpadMemoryDRAMLL(GDDR5_4000_x64):
+    # size of DRAM Chip in Bytes
+    device_size = '32MB'
+
+    # pipeline latency of the controller and PHY, split into a
+    # frontend part and a backend part, with reads and writes serviced
+    # by the queues only seeing the frontend contribution, and reads
+    # serviced by the memory seeing the sum of the two
+    # Basically: frontend -> reads; backend -> reads and writes
+    static_frontend_latency = Param.Latency("5ns", "Static frontend latency")
+    static_backend_latency = Param.Latency("5ns", "Static backend latency")
+
