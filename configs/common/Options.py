@@ -110,7 +110,10 @@ def addCommonOptions(parser):
     parser.add_option("--spm-type-1", type="int", default=1)
     parser.add_option("--spm-type-2", type="int", default=1)
     parser.add_option("--spm-type-3", type="int", default=1)
-
+    
+    parser.add_option("--spm-lat-1", type="string", default="10ns")
+    parser.add_option("--spm-lat-2", type="string", default="10ns")
+    parser.add_option("--spm-lat-3", type="string", default="10ns")
 
     parser.add_option("-l", "--lpae", action="store_true")
     parser.add_option("-V", "--virtualisation", action="store_true")

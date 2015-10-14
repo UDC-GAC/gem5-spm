@@ -37,6 +37,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # Authors: Steve Reinhardt
+#          Marcos Horro Varela
 
 # Simple test script
 #
