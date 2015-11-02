@@ -8,7 +8,7 @@
 
 #define KBYTE 1024
 #define MBYTE 1024*1024
-#define DEBUG 1
+#define DEBUG 0
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -23,13 +23,14 @@ int main(int argc, char** argv)
 
   int i = 0;
 
-  if (DEBUG)
+  if (DEBUG)  {
     printf("Virtual address pointer vaddr: %lu\n", p);
-
+    exit(0);
+  }
+  
   for (i=0; i<8*KBYTE; i++) {
-    p[i] = i;
-    if (DEBUG) 
-	printf("dir: %d\n", p[i]);
+    p[i] = i; 
+    printf("dir: %d\n", p[i]);
   }
 
   printf("test program finish\n");
