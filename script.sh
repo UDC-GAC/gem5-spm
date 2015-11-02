@@ -16,10 +16,10 @@
 # TEST With SPM
 
 # 5ns
-#./build/X86/gem5.opt --stats-file=spm.txt --debug-flags=PseudoInst --debug-file=test-spm-trace.out configs/spm/se.py --cpu-type=timing --mem-size=4GB --scratchpad=1 --spm-size-1=32MB --spm-type-1=1 --spm-lat-1=5ns -c tests/test-progs/spm/test_dir/test
+#./build/X86/gem5.debug --stats-file=spm.txt --debug-flags=PseudoInst --debug-file=test-spm-trace.out configs/spm/se.py --cpu-type=timing --mem-size=4GB --scratchpad=1 --spm-size-1=32MB --spm-type-1=1 --spm-lat-1=5ns -c tests/test-progs/spm/test_dir/test
 
 # 1ns
-#./build/X86/gem5.opt --stats-file=spm.txt --debug-flags=PseudoInst --debug-file=test-spm-trace.out configs/spm/se.py --mem-size=4GB --scratchpad=1 --spm-size-1=32MB --spm-type-1=1 --spm-lat-1=1ns -c tests/test-progs/spm/test_dir/test
+#./build/X86/gem5.debug --stats-file=spm.txt --debug-flags=PseudoInst --debug-file=test-spm-trace.out configs/spm/se.py --cpu-type=timing --mem-size=4GB --scratchpad=1 --spm-size-1=32MB --spm-type-1=1 --spm-lat-1=1ns -c tests/test-progs/spm/test_dir/test
 
 ################################################
 # @TODO
