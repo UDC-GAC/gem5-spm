@@ -63,11 +63,11 @@ class ScratchpadMemory : public SimpleMemory
 
     void regStats();
 
-  protected:
+  // protected:
 
-    Tick recvAtomic(PacketPtr pkt);
+  //    Tick recvAtomic(PacketPtr pkt);
 
-  bool recvTimingReq(PacketPtr pkt);
+  //    bool recvTimingReq(PacketPtr pkt);
 
 };
 
