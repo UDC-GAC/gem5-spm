@@ -95,6 +95,8 @@ def addCommonOptions(parser):
     parser.add_option("--mem-size", action="store", type="string",
                       default="512MB",
                       help="Specify the physical memory size (single memory)")
+    
+    # Scratchpad options
     parser.add_option("--scratchpad", type="int", help="Enable scratchpad memory",
                       default=None)
     parser.add_option("--spm-size-1", action="store", type="string", 
@@ -106,16 +108,27 @@ def addCommonOptions(parser):
     parser.add_option("--spm-size-3", action="store", type="string", 
                       default="8MB",
                       help = "Specify the physical scratchpad memory size (3)")
-    # Type 1 = low latency write, Type 2 = low latency read, Type 3 = DRAM based
+    # Type 1 = low latency write, Type 2 = DRAM based
     parser.add_option("--spm-type-1", type="int", default=1)
     parser.add_option("--spm-type-2", type="int", default=1)
     parser.add_option("--spm-type-3", type="int", default=1)
 
     # Latencies SPM
-    parser.add_option("--spm-lat-1", type="string", default="10ns")
-    parser.add_option("--spm-lat-2", type="string", default="10ns")
-    parser.add_option("--spm-lat-3", type="string", default="10ns")
+    parser.add_option("--spm-r-lat-1", type="string", default="5ns")
+    parser.add_option("--spm-r-lat-2", type="string", default="5ns")
+    parser.add_option("--spm-r-lat-3", type="string", default="5ns")
+    parser.add_option("--spm-rvar-lat-1", type="string", default="0ns")
+    parser.add_option("--spm-rvar-lat-2", type="string", default="0ns")
+    parser.add_option("--spm-rvar-lat-3", type="string", default="0ns")
 
+    parser.add_option("--spm-w-lat-1", type="string", default="10ns")
+    parser.add_option("--spm-w-lat-2", type="string", default="10ns")
+    parser.add_option("--spm-w-lat-3", type="string", default="10ns")
+    parser.add_option("--spm-wvar-lat-1", type="string", default="0ns")
+    parser.add_option("--spm-wvar-lat-2", type="string", default="0ns")
+    parser.add_option("--spm-wvar-lat-3", type="string", default="0ns")
+
+    
     parser.add_option("-l", "--lpae", action="store_true")
     parser.add_option("-V", "--virtualisation", action="store_true")
 

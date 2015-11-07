@@ -53,27 +53,27 @@ def config_spm(options, system):
             #####################
             # Choosing type of SPM:
             # 1.- Inherits from SimpleMemory. Read latency 2ns and 1ns variable. BW=64GBs
-            # 2.- Inherits from SimpleMemory. Read latency 1ns. BW=128GBs 
-            # 3.- Inherits from GDDR5. Modified front end and back end latencies
-            # 4.- Inherits from GDDR5. Lower latencies than GDDR5
+            # 2.- Inherits from GDDR5. Modified front end and back end latencies
             ######################
             if (spm_type==1):
                 spm = ScratchpadMemory()
-            elif (spm_type==2):
-                spm = ScratchpadMemoryLL()
-            elif (spm_type==3):
-                spm = ScratchpadMemoryDRAM()
             else:
-                spm = ScratchpadMemoryDRAMLL()
+                spm = ScratchpadMemoryDRAM()
 
             # Needed to choose the range
             spm.range = m5.objects.AddrRange(start = addr_start, size = spm_size)
             # This is a hack. Be careful with it. If there are more spm, they will all be at the end
             addr_start = spm.range.end + 1
             # Just adding the latency: if SimpleMemory
-            if (spm_type==1)|(spm_type==2):
-                spm_lat  = getattr(options, "spm_lat_" + `i`)
-                spm.latency = spm_lat
+            if (spm_type==1):
+                spm.latency = getattr(options, "spm_r_lat_" + `i`)
+                spm.latency_var = getattr(options, "spm_rvar_lat_" + `i`)
+                spm.latency_write = getattr(options, "spm_w_lat_" + `i`)
+                spm.latency_write_var = getattr(options, "spm_wvar_lat_" + `i`)
+            else:
+                spm.static_frontend_latency = getattr(options, "spm_w_lat_" + `i`)
+                spm.static_backend_latency = getattr(options, "spm_r_lat_" + `i`)
+                
             # Connecting to master bus 
             spm.port = system.membus.master
             # Adding spm to the system
