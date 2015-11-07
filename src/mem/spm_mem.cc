@@ -43,80 +43,110 @@ ScratchpadMemory::regStats()
     AbstractMemory::regStats();
 }
 
-// // Always counting latencies
-// Tick
-// ScratchpadMemory::recvAtomic(PacketPtr pkt)
-// {
-//     access(pkt);
-//     return getLatency();
-// }
+ScratchpadMemory::ScratchpadMemory(const ScratchpadMemoryParams* p) :
+    SimpleMemory(p),
+    latency_write(p->latency_write), latency_write_var(p->latency_write_var)
+{
+	DPRINTF(Drain, "pisasconst\n");
+}
 
-// // Basically removed 
-// bool
-// ScratchpadMemory::recvTimingReq(PacketPtr pkt)
-// {
-//     /// @todo temporary hack to deal with memory corruption issues until
-//     /// 4-phase transactions are complete
-//     for (int x = 0; x < pendingDelete.size(); x++)
-//         delete pendingDelete[x];
-//     pendingDelete.clear();
+Tick
+ScratchpadMemory::recvAtomic(PacketPtr pkt)
+{
+    access(pkt);
+    return pkt->memInhibitAsserted() ? 0 : ((pkt->isRead()) ? getLatency() : getWriteLatency());
+}
 
-//     // we should never get a new request after committing to retry the
-//     // current one, the bus violates the rule as it simply sends a
-//     // retry to the next one waiting on the retry list, so simply
-//     // ignore it
-//     if (retryReq)
-//         return false;
+bool
+ScratchpadMemory::recvTimingReq(PacketPtr pkt)
+{
+    /// @todo temporary hack to deal with memory corruption issues until
+    /// 4-phase transactions are complete
+    for (int x = 0; x < pendingDelete.size(); x++)
+        delete pendingDelete[x];
+    pendingDelete.clear();
+    
+    if (pkt->memInhibitAsserted()) {
+        // snooper will supply based on copy of packet
+        // still target's responsibility to delete packet
+        pendingDelete.push_back(pkt);
+        return true;
+    }
 
-//     // if we are busy with a read or write, remember that we have to
-//     // retry
-//     if (isBusy) {
-//         retryReq = true;
-//         return false;
-//     }
+    // we should never get a new request after committing to retry the
+    // current one, the bus violates the rule as it simply sends a
+    // retry to the next one waiting on the retry list, so simply
+    // ignore it
+    if (retryReq)
+        return false;
 
-//     // update the release time according to the bandwidth limit, and
-//     // do so with respect to the time it takes to finish this request
-//     // rather than long term as it is the short term data rate that is
-//     // limited for any real memory
+    // if we are busy with a read or write, remember that we have to
+    // retry
+    if (isBusy) {
+        retryReq = true;
+        return false;
+    }
 
-//     // only look at reads and writes when determining if we are busy,
-//     // and for how long, as it is not clear what to regulate for the
-//     // other types of commands
-//     if (pkt->isRead() || pkt->isWrite()) {
-//         // calculate an appropriate tick to release to not exceed
-//         // the bandwidth limit
-//         Tick duration = pkt->getSize() * bandwidth;
+    // @todo someone should pay for this
+    pkt->headerDelay = pkt->payloadDelay = 0;
 
-//         // only consider ourselves busy if there is any need to wait
-//         // to avoid extra events being scheduled for (infinitely) fast
-//         // memories
-//         if (duration != 0) {
-//             schedule(releaseEvent, curTick() + duration);
-//             isBusy = true;
-//         }
-//     }
+    // update the release time according to the bandwidth limit, and
+    // do so with respect to the time it takes to finish this request
+    // rather than long term as it is the short term data rate that is
+    // limited for any real memory
 
-//     // go ahead and deal with the packet and put the response in the
-//     // queue if there is one
-//     bool needsResponse = pkt->needsResponse();
-//     pkt->payloadDelay += getLatency();
-//     pkt->headerDelay += getLatency();
-//     recvAtomic(pkt);
-//     // turn packet around to go back to requester if response expected
-//     if (needsResponse) {
-//         // recvAtomic() should already have turned packet into
-//         // atomic response
-//         assert(pkt->isResponse());
-//         // to keep things simple (and in order), we put the packet at
-//         // the end even if the latency suggests it should be sent
-//         // before the packet(s) before it
-//         packetQueue.push_back(DeferredPacket(pkt, curTick()+getLatency()));
-//         if (!retryResp && !dequeueEvent.scheduled())
-//             schedule(dequeueEvent, packetQueue.back().tick);
-//     } else {
-// 	pendingDelete.push_back(pkt);
-//     }
+    // only look at reads and writes when determining if we are busy,
+    // and for how long, as it is not clear what to regulate for the
+    // other types of commands
+    if (pkt->isRead() || pkt->isWrite()) {
+        // calculate an appropriate tick to release to not exceed
+        // the bandwidth limit
+        Tick duration = pkt->getSize() * bandwidth;
 
-//     return true;
-// }
+        // only consider ourselves busy if there is any need to wait
+        // to avoid extra events being scheduled for (infinitely) fast
+        // memories
+        if (duration != 0) {
+            schedule(releaseEvent, curTick() + duration);
+            isBusy = true;
+        }
+    }
+
+    // go ahead and deal with the packet and put the response in the
+    // queue if there is one
+    bool needsResponse = pkt->needsResponse();
+    recvAtomic(pkt);
+    DPRINTF(Drain, "pisas\n");
+    // turn packet around to go back to requester if response expected
+    if (needsResponse) {
+        // recvAtomic() should already have turned packet into
+        // atomic response
+        assert(pkt->isResponse());
+        // to keep things simple (and in order), we put the packet at
+        // the end even if the latency suggests it should be sent
+        // before the packet(s) before it.
+
+	// Difference between read/write latencies
+	Tick totLat = ((pkt->isRead()) ? getLatency() : 0) + ((pkt->isWrite()) ? getWriteLatency() : 0);
+        packetQueue.push_back(DeferredPacket(pkt, curTick() + totLat));
+        if (!retryResp && !dequeueEvent.scheduled())
+            schedule(dequeueEvent, packetQueue.back().tick);
+    } else {
+        pendingDelete.push_back(pkt);
+    }
+
+    return true;
+}
+
+Tick
+ScratchpadMemory::getWriteLatency() const
+{
+    return latency_write +
+        (latency_write_var ? random_mt.random<Tick>(0, latency_write_var) : 0);
+}
+
+ScratchpadMemory*
+ScratchpadMemoryParams::create()
+{
+    return new ScratchpadMemory(this);
+}

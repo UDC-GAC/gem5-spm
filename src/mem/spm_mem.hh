@@ -51,6 +51,7 @@
 #include "mem/simple_mem.hh"
 #include "mem/port.hh"
 #include "params/SimpleMemory.hh"
+#include "params/ScratchpadMemory.hh"
 
 /**
  * This definition of scratchpad just adds stats to output
@@ -59,16 +60,32 @@
  */
 class ScratchpadMemory : public SimpleMemory
 {
+  private:
+    /**
+     * Latency if is a write request. If it is a read request,
+     * latency from SimpleMemory is used (see implementation)
+     */
+    const Tick latency_write;
+
+    /**
+     * Fudge factor added to the write latency.
+     */
+    const Tick latency_write_var;
+
+	
   public:
 
+    ScratchpadMemory(const ScratchpadMemoryParams *p);
+	
     void regStats();
 
-  // protected:
+  protected:
 
-  //    Tick recvAtomic(PacketPtr pkt);
+    Tick recvAtomic(PacketPtr pkt);
+	
+    bool recvTimingReq(PacketPtr pkt);
 
-  //    bool recvTimingReq(PacketPtr pkt);
-
+    Tick getWriteLatency() const;
 };
 
 #endif //__SCRATCHPAD_MEMORY_HH__
