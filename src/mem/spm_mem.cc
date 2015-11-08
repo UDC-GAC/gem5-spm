@@ -47,7 +47,6 @@ ScratchpadMemory::ScratchpadMemory(const ScratchpadMemoryParams* p) :
     SimpleMemory(p),
     latency_write(p->latency_write), latency_write_var(p->latency_write_var)
 {
-	DPRINTF(Drain, "pisasconst\n");
 }
 
 Tick
@@ -116,7 +115,6 @@ ScratchpadMemory::recvTimingReq(PacketPtr pkt)
     // queue if there is one
     bool needsResponse = pkt->needsResponse();
     recvAtomic(pkt);
-    DPRINTF(Drain, "pisas\n");
     // turn packet around to go back to requester if response expected
     if (needsResponse) {
         // recvAtomic() should already have turned packet into

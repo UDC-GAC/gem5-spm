@@ -192,11 +192,11 @@ class SimpleMemory : public AbstractMemory
 
   protected:
 
-    Tick recvAtomic(PacketPtr pkt);
+    virtual Tick recvAtomic(PacketPtr pkt);
 
     void recvFunctional(PacketPtr pkt);
 
-    bool recvTimingReq(PacketPtr pkt);
+    virtual bool recvTimingReq(PacketPtr pkt);
 
     void recvRespRetry();
 
