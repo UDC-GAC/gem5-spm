@@ -32,6 +32,7 @@
 #include "base/random.hh"
 #include "mem/spm_mem.hh"
 #include "debug/Drain.hh"
+#include "sim/system.hh"
 
 using namespace std;
 
@@ -42,6 +43,8 @@ ScratchpadMemory::regStats()
 
     AbstractMemory::regStats();
 
+    System *system = (AbstractMemory::system());
+
     readEnergy
         .name(name() + ".energy_read")
         .desc("Total energy reading (pJ)")
@@ -49,8 +52,8 @@ ScratchpadMemory::regStats()
         .prereq(AbstractMemory::numReads)
         .flags(total | nozero | nonan)
         ;
-    for (int i = 0; i < system()->maxMasters(); i++) {
-        readEnergy.subname(i, system()->getMasterName(i));
+    for (int i = 0; i < system->maxMasters(); i++) {
+        readEnergy.subname(i, system->getMasterName(i));
     }
 
     writeEnergy
@@ -60,8 +63,8 @@ ScratchpadMemory::regStats()
         .prereq(AbstractMemory::numWrites)
         .flags(total | nozero | nonan)
         ;
-    for (int i = 0; i < system()->maxMasters(); i++) {
-        writeEnergy.subname(i, system()->getMasterName(i));
+    for (int i = 0; i < system->maxMasters(); i++) {
+        writeEnergy.subname(i, system->getMasterName(i));
     }
 
     overheadEnergy
@@ -71,8 +74,8 @@ ScratchpadMemory::regStats()
         .prereq(AbstractMemory::numOther)
         .flags(total | nozero | nonan)
         ;
-    for (int i = 0; i < system()->maxMasters(); i++) {
-        overheadEnergy.subname(i, system()->getMasterName(i));
+    for (int i = 0; i < system->maxMasters(); i++) {
+        overheadEnergy.subname(i, system->getMasterName(i));
     }
 
     totalEnergy
@@ -82,8 +85,8 @@ ScratchpadMemory::regStats()
         .prereq(overheadEnergy)
         .flags(total | nozero | nonan)
         ;
-    for (int i = 0; i < system()->maxMasters(); i++) {
-        totalEnergy.subname(i, system()->getMasterName(i));
+    for (int i = 0; i < system->maxMasters(); i++) {
+        totalEnergy.subname(i, system->getMasterName(i));
     }
 
     totalEnergy
@@ -93,8 +96,8 @@ ScratchpadMemory::regStats()
         .prereq(totalEnergy)
         .flags(total | nozero | nonan)
         ;
-    for (int i = 0; i < system()->maxMasters(); i++) {
-        averageEnergy.subname(i, system()->getMasterName(i));
+    for (int i = 0; i < system->maxMasters(); i++) {
+        averageEnergy.subname(i, system->getMasterName(i));
     }
     
     // Trying to implement a energy model...

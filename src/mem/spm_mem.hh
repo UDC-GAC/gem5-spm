@@ -53,6 +53,9 @@
 #include "params/SimpleMemory.hh"
 #include "params/ScratchpadMemory.hh"
 
+
+class System;
+
 /**
  * This definition of scratchpad just adds stats to output
  *
