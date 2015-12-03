@@ -17,6 +17,10 @@ class ScratchpadMemory(SimpleMemory):
    port = SlavePort("Slave ports")
    latency_write = Param.Latency('10ns', "Write latency in SPM")
    latency_write_var = Param.Latency('0ns', "Write latency in SPM variable")
+   # Modeling energy
+   energy_read = Param.Float('3.2', "Energy for each reading (pJ)");
+   energy_write = Param.Float('4.3', "Energy for each writting (pJ)");
+   energy_overhead = Param.Float('0', "Overhead energy (pJ)");
 
    # This parameter is defined as the acceptance rate of request. Not very clear...
    # In the config.ini file is the inverse, e.g. BW=12.8GB/s, bandwidth = 73.0 ps/b

@@ -72,6 +72,29 @@ class ScratchpadMemory : public SimpleMemory
      */
     const Tick latency_write_var;
 
+    /**
+     * Fudge factor added to the write latency.
+     */
+    const double energy_read;
+
+    /**
+     * Fudge factor added to the write latency.
+     */
+    const double energy_write;
+
+    /**
+     * Fudge factor added to the write latency.
+     */
+    const double energy_overhead;
+
+    /*
+     * Command energies
+    */
+    Stats::Formula readEnergy;
+    Stats::Formula writeEnergy;
+    Stats::Formula overheadEnergy;
+    Stats::Formula averageEnergy;
+    Stats::Formula totalEnergy;
 	
   public:
 

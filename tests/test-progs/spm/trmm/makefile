@@ -3,8 +3,13 @@
 UTIL=/home/markoshorro/gem5/util
 INST=/home/markoshorro/gem5/util/m5/m5op_x86.S
 
-all:
-	gcc -I utilities utilities/polybench.c -I $(UTIL) $(INST) 2mm.c -o 2mm -DUNIX --static
+all: spm org
+
+spm:
+	gcc -I $(UTIL) $(INST) trmm_spm.c -o spm -DUNIX --static
+
+org:
+	gcc trmm_mod.c -o org -DUNIX --static
 
 clean:
-	rm 2mm
+	rm org spm

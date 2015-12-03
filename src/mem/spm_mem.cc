@@ -41,11 +41,76 @@ ScratchpadMemory::regStats()
     using namespace Stats;
 
     AbstractMemory::regStats();
+
+    readEnergy
+        .name(name() + ".energy_read")
+        .desc("Total energy reading (pJ)")
+        .precision(0)
+        .prereq(AbstractMemory::numReads)
+        .flags(total | nozero | nonan)
+        ;
+    for (int i = 0; i < system()->maxMasters(); i++) {
+        readEnergy.subname(i, system()->getMasterName(i));
+    }
+
+    writeEnergy
+        .name(name() + ".energy_write")
+        .desc("Total energy writting (pJ)")
+        .precision(0)
+        .prereq(AbstractMemory::numWrites)
+        .flags(total | nozero | nonan)
+        ;
+    for (int i = 0; i < system()->maxMasters(); i++) {
+        writeEnergy.subname(i, system()->getMasterName(i));
+    }
+
+    overheadEnergy
+        .name(name() + ".energy_overhead")
+        .desc("Other energy (pJ)")
+        .precision(0)
+        .prereq(AbstractMemory::numOther)
+        .flags(total | nozero | nonan)
+        ;
+    for (int i = 0; i < system()->maxMasters(); i++) {
+        overheadEnergy.subname(i, system()->getMasterName(i));
+    }
+
+    totalEnergy
+        .name(name() + ".energy_total")
+        .desc("Total energy (pJ)")
+        .precision(0)
+        .prereq(overheadEnergy)
+        .flags(total | nozero | nonan)
+        ;
+    for (int i = 0; i < system()->maxMasters(); i++) {
+        totalEnergy.subname(i, system()->getMasterName(i));
+    }
+
+    totalEnergy
+        .name(name() + ".energy_average")
+        .desc("Average energy (pJ)")
+        .precision(0)
+        .prereq(totalEnergy)
+        .flags(total | nozero | nonan)
+        ;
+    for (int i = 0; i < system()->maxMasters(); i++) {
+        averageEnergy.subname(i, system()->getMasterName(i));
+    }
+    
+    // Trying to implement a energy model...
+    readEnergy = AbstractMemory::numReads * energy_read;
+    writeEnergy = AbstractMemory::numWrites * energy_write;
+    overheadEnergy = AbstractMemory::numOther * energy_overhead;
+    totalEnergy = readEnergy + writeEnergy + overheadEnergy;
+    averageEnergy = totalEnergy / 3;
+    
 }
 
 ScratchpadMemory::ScratchpadMemory(const ScratchpadMemoryParams* p) :
     SimpleMemory(p),
-    latency_write(p->latency_write), latency_write_var(p->latency_write_var)
+    latency_write(p->latency_write), latency_write_var(p->latency_write_var),
+    energy_read(p->energy_read), energy_write(p->energy_write),
+    energy_overhead(p->energy_overhead)
 {
 }
 
