@@ -89,7 +89,7 @@ ScratchpadMemory::regStats()
         totalEnergy.subname(i, system->getMasterName(i));
     }
 
-    totalEnergy
+    averageEnergy
         .name(name() + ".energy_average")
         .desc("Average energy (pJ)")
         .precision(0)
@@ -105,7 +105,7 @@ ScratchpadMemory::regStats()
     writeEnergy = AbstractMemory::numWrites * energy_write;
     overheadEnergy = AbstractMemory::numOther * energy_overhead;
     totalEnergy = readEnergy + writeEnergy + overheadEnergy;
-    averageEnergy = totalEnergy / 3;
+    averageEnergy = (energy_overhead==0) ? totalEnergy / 2 : totalEnergy / 3 ;
     
 }
 

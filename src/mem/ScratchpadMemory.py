@@ -20,7 +20,7 @@ class ScratchpadMemory(SimpleMemory):
    # Modeling energy
    energy_read = Param.Float('3.2', "Energy for each reading (pJ)");
    energy_write = Param.Float('4.3', "Energy for each writting (pJ)");
-   energy_overhead = Param.Float('0', "Overhead energy (pJ)");
+   energy_overhead = Param.Float('0.2', "Overhead energy (pJ)");
 
    # This parameter is defined as the acceptance rate of request. Not very clear...
    # In the config.ini file is the inverse, e.g. BW=12.8GB/s, bandwidth = 73.0 ps/b
