@@ -23,12 +23,8 @@ int main(int argc, char** argv)
   /* Variable declaration/allocation. */
   double alpha;
 
-  double *vaddr = (double *) malloc(4*ni*sizeof(double));
-
-  double *A = vaddr;
-  double *B = A + 2 * ni * sizeof(double);
-
-  printf("Llego: %d, %lu, %lu\n", 4*ni*sizeof(double), A, B);
+  double *A = (double *) malloc(ni*ni*sizeof(double));
+  double *B = (double *) malloc(ni*ni*sizeof(double));
   
   /* Run kernel. */
   int i, j, k;
@@ -37,7 +33,6 @@ int main(int argc, char** argv)
     for (j = 0; j < ni; j++) {
       A[i*ni + j] = ((double) i*j) / ni;
       B[i*ni + j] = ((double) i*j) / ni;
-      printf("(%d,%d): %lu, %lu\n", i, j, &A[i*ni + j], &B[i*ni + j]);
     }
 #pragma scop
   /*  B := alpha*A'*B, A triangular */
@@ -47,5 +42,8 @@ int main(int argc, char** argv)
         B[i*ni + j] += alpha * A[i*ni + k] * B[j*ni + k];
 #pragma endscop
 
+  free(A);
+  free(B);
+  
   return 0;
 }

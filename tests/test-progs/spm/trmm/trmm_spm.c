@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 
   double *vaddr = (double *) spm_malloc(SPM_SIZE_1, SPM_1);
   double *B = vaddr;
-  double *A = (double *) malloc(2*ni*sizeof(double));
+  double *A = (double *) malloc(ni*ni*sizeof(double));
   
   /* Run kernel. */
   int i, j, k;
