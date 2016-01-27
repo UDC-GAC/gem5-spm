@@ -54,13 +54,14 @@ from m5.util import addToPath, fatal
 
 addToPath('../common')
 addToPath('../ruby')
+addToPath('./')
 
 import Options
 import Ruby
 import Simulation
-import CacheConfig
+import CacheConfigSpm
 import ScratchPadConfig
-import MemConfig
+import MemConfigSpm
 from Caches import *
 from cpu2000 import *
 
@@ -241,11 +242,13 @@ for i in xrange(np):
     system.cpu[i].createThreads()
 
 MemClass = Simulation.setMemClass(options)
+system.spmbus = SPMXBar()
 system.membus = SystemXBar()
-system.system_port = system.membus.slave
-CacheConfig.config_cache(options, system)
-MemConfig.config_mem(options, system)
+system.spmbus.master = system.membus.slave
+system.system_port = system.spmbus.slave
+CacheConfigSpm.config_cache(options, system)
 ScratchPadConfig.config_spm(options, system)
+MemConfigSpm.config_mem(options, system)
 
 root = Root(full_system = False, system = system)
 Simulation.run(options, root, system, FutureClass)

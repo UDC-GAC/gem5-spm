@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+#include "m5/m5op.h"
 
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
@@ -18,7 +19,7 @@
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
-  int ni = 1024;
+  int ni = 32;
 
   /* Variable declaration/allocation. */
   double alpha;
@@ -34,6 +35,7 @@ int main(int argc, char** argv)
       A[i*ni + j] = ((double) i*j) / ni;
       B[i*ni + j] = ((double) i*j) / ni;
     }
+  m5_reset_stats(0,0);
 #pragma scop
   /*  B := alpha*A'*B, A triangular */
   for (i = 1; i <  ni; i++)
@@ -41,6 +43,7 @@ int main(int argc, char** argv)
       for (k = 0; k < i; k++)
         B[i*ni + j] += alpha * A[i*ni + k] * B[j*ni + k];
 #pragma endscop
+  m5_dump_stats(0,0);
 
   free(A);
   free(B);

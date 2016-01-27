@@ -30,7 +30,7 @@
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
-  int ni = 1024;
+  int ni = 32;
 
   /* Variable declaration/allocation. */
   double alpha;
@@ -48,6 +48,7 @@ int main(int argc, char** argv)
       B[i*ni + j] = ((double) i*j) / ni;
     }
 
+  m5_reset_stats(0,0);
 #pragma scop
   /*  B := alpha*A'*B, A triangular */
   for (i = 1; i <  ni; i++)
@@ -55,6 +56,7 @@ int main(int argc, char** argv)
       for (k = 0; k < i; k++)
         B[i*ni + j] += alpha * A[i*ni + k] * B[j*ni + k];
 #pragma endscop
+  m5_dump_stats(0,0);
 
   return 0;
 }

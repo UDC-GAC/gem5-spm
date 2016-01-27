@@ -74,8 +74,9 @@ def config_spm(options, system):
                 spm.static_frontend_latency = getattr(options, "spm_w_lat_" + `i`)
                 spm.static_backend_latency = getattr(options, "spm_r_lat_" + `i`)
                 
-            # Connecting to master bus 
-            spm.port = system.membus.master
+            # Connecting to master bus
+            # system.spmbus = SPMXBar(clk_domain = system.cpu_clk_domain)
+            spm.port = system.spmbus.master
             # Adding spm to the system
             setattr(system, "spm_" + `i`, spm)
  

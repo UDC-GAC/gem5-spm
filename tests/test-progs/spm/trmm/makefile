@@ -9,7 +9,7 @@ spm:
 	gcc -I $(UTIL) $(INST) trmm_spm.c -o spm -DUNIX --static
 
 org:
-	gcc trmm_mod.c -o org -DUNIX --static
+	gcc -I $(UTIL) $(INST) trmm_mod.c -o org -DUNIX --static
 
 clean:
 	rm org spm
