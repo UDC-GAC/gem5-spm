@@ -2,7 +2,7 @@
 parsetab.py
 *~
 
-a.out
+*.out
 build/
 m5out/
 
@@ -12,3 +12,6 @@ tests/test-progs/spm/test_dir/*
 tests/test-progs/spm/trmm/*
 !tests/test-progs/spm/trmm/*.c
 !tests/test-progs/spm/trmm/makefile
+
+\.*
+!\.gitignore
