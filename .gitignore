@@ -1,3 +1,6 @@
 *.pyc
 parsetab.py
 *~
+a.out
+build/
+m5out/
