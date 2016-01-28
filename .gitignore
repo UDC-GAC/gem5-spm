@@ -1,6 +1,14 @@
 *.pyc
 parsetab.py
 *~
+
 a.out
 build/
 m5out/
+
+tests/test-progs/spm/test_dir/*
+!tests/test-progs/spm/test_dir/*.c
+!tests/test-progs/spm/test_dir/makefile
+tests/test-progs/spm/trmm/*
+!tests/test-progs/spm/trmm/*.c
+!tests/test-progs/spm/trmm/makefile
