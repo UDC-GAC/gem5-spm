@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     exit(0);
   }
   
-  for (i=0; i<8*KBYTE; i++) {
+  for (i=0; i<KBYTE; i++) {
     p[i] = i; 
     printf("dir: %d\n", p[i]);
   }
