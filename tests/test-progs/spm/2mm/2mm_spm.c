@@ -62,7 +62,7 @@ int main(int argc, char** argv)
     for (j = 0; j < nl; j++)
       D[i*nl+j] = ((double) i*(j+2)) / nk;
 
-  //m5_checkpoint(0,0);
+  m5_reset_stats(0,0);
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
   for (i = 0; i < NI; i++)
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 	  D[i*NL+j] += tmp[i*NK+k] * C[k*NJ+j];
       }
 #pragma endscop
-  //m5_dumpreset_stats(0,0);
+  m5_dump_stats(0,0);
 
   return 0;
 }
