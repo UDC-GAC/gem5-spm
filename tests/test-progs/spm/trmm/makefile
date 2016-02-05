@@ -11,5 +11,8 @@ spm:
 org:
 	gcc -I $(UTIL) $(INST) trmm_mod.c -o org -DUNIX --static
 
+cache:
+	gcc trmm_cachegrind.c -o cache
+
 clean:
-	rm org spm
+	rm org spm cache
