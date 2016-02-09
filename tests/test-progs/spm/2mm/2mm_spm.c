@@ -9,10 +9,6 @@
 #include <math.h>
 #include "m5/m5op.h"
 
-/* Include benchmark-specific header. */
-/* Default data type is double, default size is 4000. */
-#include "2mm.h"
-
 #ifndef SPM_VAR
 # define KBYTE      1024
 # define MBYTE      1024*1024
@@ -22,15 +18,17 @@
 # define SPM_SIZE_1 MBYTE*256
 # define SPM_SIZE_2 MBYTE*128
 # define SPM_SIZE_3 MBYTE*128
+# define NI         32
+# define N          32*32
 #endif
 
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
   int ni = NI;
-  int nj = NJ;
-  int nk = NK;
-  int nl = NL;
+  int nj = NI;
+  int nk = NI;
+  int nl = NI;
 
   /* Variable declaration/allocation. */
   double alpha;
@@ -66,18 +64,18 @@ int main(int argc, char** argv)
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
   for (i = 0; i < NI; i++)
-    for (j = 0; j < NJ; j++)
+    for (j = 0; j < NI; j++)
       {
-	tmp[i*NJ+j] = 0;
-	for (k = 0; k < NK; ++k)
-	  tmp[i*NJ+j] += alpha * A[i*NK+k] * B[k*NJ+j];
+	tmp[i*NI+j] = 0;
+	for (k = 0; k < NI; ++k)
+	  tmp[i*NI+j] += alpha * A[i*NI+k] * B[k*NI+j];
       }
   for (i = 0; i < NI; i++)
-    for (j = 0; j < NL; j++)
+    for (j = 0; j < NI; j++)
       {
-	D[i*NL+j] *= beta;
-	for (k = 0; k < NJ; ++k)
-	  D[i*NL+j] += tmp[i*NK+k] * C[k*NJ+j];
+	D[i*NI+j] *= beta;
+	for (k = 0; k < NI; ++k)
+	  D[i*NI+j] += tmp[i*NI+k] * C[k*NI+j];
       }
 #pragma endscop
   m5_dump_stats(0,0);
