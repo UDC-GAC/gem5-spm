@@ -3,16 +3,13 @@
 UTIL=../../../../util
 INST=${UTIL}/m5/m5op_x86.S
 
-all: test testn testtmp
+all: test testn 
 
 test: test.c
 	gcc test.c -o test -I $(UTIL) $(INST) -DUNIX --static
 
-testn:
-	gcc test-nospm.c -o testn -DUNIX --static
-
-testtmp:
-	gcc test_tmp.c -o testmp -I $(UTIL) $(INST) -DUNIX --static
+testn: test-nospm.c
+	gcc test-nospm.c -o testn -I $(UTIL) $(INST) -DUNIX --static
 
 clean:
-	rm test testn testmp
+	rm test testn

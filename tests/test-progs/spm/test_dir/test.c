@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 {
   printf("test program start\n");
   
-  int *p = (int *) spm_malloc(sizeof(int)*8*KBYTE, 1);
+  int *p = (int *) spm_malloc(sizeof(int)*16*KBYTE, 1);
 
   int i = 0;
 
@@ -28,12 +28,13 @@ int main(int argc, char** argv)
     printf("Virtual address pointer vaddr: %lu\n", p);	  
     exit(0);
   }
-  
-  for (i=0; i<KBYTE; i++) {
-    p[i] = i; 
-    printf("dir: %d\n", p[i]);
-  }
 
-  printf("test program finish\n");
-  
+  m5_reset_stats(0,0);
+  for (i=0; i<16*KBYTE; i++) {
+    p[i] = i; 
+    //printf("dir: %d\n", p[i]);
+  }
+  m5_dump_stats(0,0);
+
+  printf("test program finish\n");  
 }
