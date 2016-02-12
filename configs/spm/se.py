@@ -129,9 +129,9 @@ if args:
     print "Error: script doesn't take any positional arguments"
     sys.exit(1)
 
-if not options.scratchpad:
-    print "You must configure scratchpad memory"
-    sys.exit(1)
+#if not options.scratchpad:
+#    print "You must configure scratchpad memory"
+#    sys.exit(1)
 
 multiprocesses = []
 numThreads = 1
