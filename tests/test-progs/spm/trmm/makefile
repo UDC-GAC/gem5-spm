@@ -1,23 +1,23 @@
 # -I option searches for specified directory
 
-UTIL=/home/markoshorro/gem5/util
-INST=/home/markoshorro/gem5/util/m5/m5op_x86.S
+UTIL=../../../../util
+INST=${UTIL}/m5/m5op_x86.S
 
 all: spm org
 
-spm:
+spm: trmm_spm.c
 	gcc -I $(UTIL) $(INST) trmm_spm.c -o spm -DUNIX --static
 
-org:
+org: trmm_mod.c
 	gcc -I $(UTIL) $(INST) trmm_mod.c -o org -DUNIX --static
 
-cache1:
+cache1: trmm_cachegrind.c
 	gcc -g trmm_cachegrind.c -o cache1
 
-cache2:
+cache2: trmm_cachegrind.c
 	gcc -g -O2 trmm_cachegrind.c -o cache2
 
-cache3:
+cache3: trmm_cachegrind.c
 	gcc -g -O3 trmm_cachegrind.c -o cache3
 
 clean:

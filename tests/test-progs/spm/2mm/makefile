@@ -1,14 +1,14 @@
 # -I option searches for specified directory
 
-UTIL=/home/markoshorro/gem5/util
-INST=/home/markoshorro/gem5/util/m5/m5op_x86.S
+UTIL=../../../../util
+INST=${UTIL}/m5/m5op_x86.S
 
 all: spm org
 
-spm:
+spm: 2mm_spm.c
 	gcc -I $(UTIL) $(INST) 2mm_spm.c -o spm -DUNIX --static
 
-org:
+org: 2mm_mod.c
 	gcc -I $(UTIL) $(INST) 2mm_mod.c -o org -DUNIX --static
 
 clean:
