@@ -24,6 +24,8 @@ class ScratchpadMemory(SimpleMemory):
 
    # This parameter is defined as the acceptance rate of request. Not very clear...
    # In the config.ini file is the inverse, e.g. BW=12.8GB/s, bandwidth = 73.0 ps/b
+   #
+   # In some papers it is described as the maximum transfer rate, description that makes sense
    bandwidth = Param.MemoryBandwidth('64GB/s',
                                      "Combined read and write bandwidth")
 
