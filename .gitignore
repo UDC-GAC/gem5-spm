@@ -12,6 +12,9 @@ tests/test-progs/spm/test_dir/*
 tests/test-progs/spm/trmm/*
 !tests/test-progs/spm/trmm/*.c
 !tests/test-progs/spm/trmm/makefile
+tests/test-progs/spm/2mm/*
+!tests/test-progs/spm/2mm/*.c
+!tests/test-progs/spm/2mm/makefile
 
 \.*
 !\.gitignore
