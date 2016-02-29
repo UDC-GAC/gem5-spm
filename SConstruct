@@ -322,7 +322,7 @@ if not GetOption('ignore_style') and hgdir.exists() and sys.stdin.isatty():
 ###################################################
 
 # Find default configuration & binary.
-Default(environ.get('M5_DEFAULT_BINARY', 'build/ALPHA/gem5.debug'))
+Default(environ.get('M5_DEFAULT_BINARY', 'build/X86/gem5.debug'))
 
 # helper function: find last occurrence of element in list
 def rfind(l, elt, offs = -1):
