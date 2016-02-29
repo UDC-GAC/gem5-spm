@@ -1,0 +1,20 @@
+<param name="interconnect_projection_type" value="0"/><!--0: aggressive wire technology; 1: conservative wire technology -->
+<param name="number_of_NoCs" value="1"/>
+<param name="homogeneous_NoCs" value="0"/>
+<component id="system.NoC0" name="noc0">
+  <param name="clockrate" value="3400"/>
+  <param name="vdd" value="0"/>
+  <param name="type" value="0"/>
+  <param name="horizontal_nodes" value="1"/>
+  <param name="vertical_nodes" value="1"/>
+  <param name="has_global_link" value="0"/>
+  <param name="link_throughput" value="1"/>
+  <param name="link_latency" value="1"/>
+  <param name="input_ports" value="1"/>
+  <param name="output_ports" value="1"/>
+  <param name="flit_bits" value="{{ system.tol2bus.width * 8 }}"/>
+  <param name="chip_coverage" value="1"/>
+  <param name="link_routing_over_percentage" value="1.0"/>
+  <stat name="total_accesses" value="{{ system.l2|sdefault('demand_accesses', 'total', 0) * 2 }}"/>
+  <stat name="duty_cycle" value="1"/>
+</component>

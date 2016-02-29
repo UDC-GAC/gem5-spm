@@ -1,0 +1,26 @@
+The "gem5-mcpat" script implement multiple commands. You can see a description
+of each by passing them the "--help" argument.
+
+Template generation uses the jinja framework (http://jinja.pocoo.org), and
+requires version 2.7 or later.
+
+In a Debian or Ubuntu system, you can install it with:
+
+    sudo apt-get install python-jinja2
+
+To check the available versions:
+
+    sudo apt-cache policy python-jinja2
+
+You can also install jinja locally using virtualenv and pip:
+
+    sudo apt-get install virtualenv
+    virtualenv --system-site-packages ~/local-jinja
+    . ~/local-jinja/bin/activate
+    pip install "jinja2>=2.7"
+
+Just remember to activate your virtualenv before using template generation, so
+that your local jinja installation is available:
+
+    . ~/local-jinja/bin/activate
+    /path/to/gem5-mcpat/gem5-mcpat ...

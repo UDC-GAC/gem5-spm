@@ -1,0 +1,3 @@
+{# L3 must have not component listed #}
+<param name="number_of_L3s" value="0"/>
+<param name="homogeneous_L3s" value="0"/>

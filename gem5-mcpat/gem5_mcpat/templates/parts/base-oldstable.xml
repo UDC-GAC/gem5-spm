@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<component id="root" name="root">
+  <component id="system" name="system">
+{# Manufacturing technology (nm) #}
+    <param name="core_tech_node" value="{{ technology|default(45) }}"/>
+{# Name for the list of "interesting" cores to evaluate (see 'find') #}
+{% set cores = find(cores_name)|lmatch_eq("type", ".*CPU") %}
+{{ assert(cores|count > 0, "Need at least one core") }}
+{% set system_clockrate = 1/cores[0].clock/1000000 %}
+    <param name="target_core_clockrate" value="{{ system_clockrate }}"/>
+    <param name="temperature" value="380"/> <!-- Kelvin -->
+    <param name="device_type" value="0"/><!--0: HP(High Performance Type); 1: LSTP(Low standby power) 2: LOP (Low Operating Power)  -->
+    <param name="longer_channel_device" value="1"/><!-- 0 no use; 1 use when aggressive -->
+    <param name="power_gating" value="1"/><!-- 0 not enabled; 1 enabled -->
+    <!-- address width determines the tag_width in Cache, LSQ and buffers in cache controller
+         default value is machine_bits, if not set -->
+    <param name="machine_bits" value="{{ machine_bits|default(64) }}"/>
+    <param name="virtual_address_width" value="{{ virtual_address_width|default(64) }}"/>
+    <param name="physical_address_width" value="{{ physical_address_width|default(48) }}"/>
+    <param name="virtual_memory_page_size" value="{{ virtual_memory_page_size|default(4096) }}"/>
+{% set slowest_core = cores|sort(attribute="numCycles")|last %}
+    <stat name="total_cycles" value="{{ slowest_core.numCycles }}"/>
+    <stat name="idle_cycles" value="0"/>
+    <stat name="busy_cycles"  value="{{ slowest_core.numCycles }}"/>
+{% block cores %}{% endblock %}
+{% block memory %}{% endblock %}
+{% block network %}{% endblock %}
+{% block misc %}{% endblock %}
+  </component>
+</component>

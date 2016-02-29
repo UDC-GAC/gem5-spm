@@ -1,0 +1,37 @@
+{# L2Directory must have not component listed #}
+<param name="number_of_L2Directories" value="0"/>
+<param name="homogeneous_L2Directories" value="0"/>
+
+<param name="number_of_L2s" value="1"/>
+<param name="homogeneous_L2s" value="0"/>
+<param name="Private_L2" value="0"/>
+<component id="system.L20" name="L20">
+  {% set l2 = system.l2 %}
+  {% set cores = find(cores_name)|lmatch_eq("type", ".*CPU") %}
+  {{ assert(cores|count > 0, "Need at least one core") }}
+  {% set system_clock = cores[0].clock %}
+  {% set l2_config = [ l2.size,
+                       l2.block_size,
+                       l2.assoc,
+                       1,
+                       1,
+                       (l2.latency / system_clock)|round(method="ceil")|int,
+                       l2.block_size,
+                       1 ] %}
+  {# constants: bank, throughput w.r.t. core clock, policy #}
+  <param name="L2_config" value="{{ l2_config|join(',') }}"/>
+  <param name="buffer_sizes" value="{{ l2.mshrs }},{{ l2.mshrs }},{{ l2.mshrs }},{{ l2.write_buffers }}"/>
+  <!-- TODO: check -->
+  <param name="clockrate" value="{{ system_clock }}"/>
+  <param name="vdd" value="0"/><!-- 0 means using ITRS default vdd -->
+  <param name="ports" value="1,1,1"/>
+  <!-- number of r, w, and rw ports -->
+  <param name="device_type" value="0"/>
+  <stat name="read_accesses" value="{{ l2|sdefault('ReadReq_accesses', 'total', 0) }}"/>
+  <stat name="read_misses" value="{{ l2|sdefault('ReadReq_misses', 'total', 0) }}"/>
+  <stat name="write_accesses" value="{{ l2|sdefault('WriteReq_accesses', 'total', 0) }}"/>
+  <stat name="write_misses" value="{{ l2|sdefault('WriteReq_misses', 'total', 0) }}"/>
+  <stat name="conflicts" value="{{ l2.replacements }}"/>
+  <!-- TODO: missing -->
+  <stat name="duty_cycle" value="1"/>
+</component>

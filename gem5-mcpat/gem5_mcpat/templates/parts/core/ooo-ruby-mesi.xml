@@ -1,0 +1,250 @@
+{% set cpu_clock_mhz = (sim_freq/system.cpu_clk_domain.clock) / 10**6 %}
+{% set cores = find(cores_name)|lmatch_eq("type", ".*CPU") %}
+<param name="number_of_cores" value="{{ cores|length }}"/>
+{% for core in cores %}
+  {% set core_name = "core" ~ loop.index0 -%}
+  {% set core_name_full = "system." ~ core_name -%}
+  <component id="{{ core_name_full }}" name="{{ core_name }}">
+    <param name="clock_rate" value="{{ cpu_clock_mhz }}"/>
+    <param name="vdd" value="0"/><!-- 0 means using ITRS default vdd -->
+    <param name="opt_local" value="1"/>
+    <param name="instruction_length" value="32"/>
+    <param name="opcode_width" value="16"/>
+    <param name="x86" value="1"/>
+    <param name="micro_opcode_width" value="8"/>
+    <param name="machine_type" value="0"/><!-- inorder/OoO; 1 inorder; 0 OOO-->
+    <param name="number_hardware_threads" value="{{ core.numThreads }}"/>
+    <param name="fetch_width" value="{{ core.fetchWidth }}"/>
+    <param name="number_instruction_fetch_ports" value="1"/>
+    <param name="decode_width" value="{{ core.decodeWidth }}"/>
+    <param name="issue_width" value="{{ core.issueWidth }}"/>
+    <param name="peak_issue_width" value="{{ core.issueWidth }}"/>
+    <param name="commit_width" value="{{ core.commitWidth }}"/>
+    <param name="fp_issue_width" value="2"/>
+    <param name="prediction_width" value="1"/>
+    <param name="pipelines_per_core" value="1,1"/>
+    <param name="pipeline_depth" value="14,14"/>
+{# Total count of functional units supporting the given operation classes #}
+{% macro fu_count(fu_list, fu_op_classes) %}
+  {% set selected = [] %}
+  {% for fu in fu_list %}
+    {% set has_classes = [] %}
+    {% for class in fu_op_classes %}
+      {% if class in fu.opList|map(attribute="opClass") %}
+        {% do has_classes.append(class) %}
+      {% endif %}
+    {% endfor %}
+    {% if has_classes %}
+      {% do selected.append(fu) %}
+    {% endif %}
+  {% endfor %}
+  {{ selected|map(attribute="count")|sum }}
+{% endmacro %}
+    <param name="ALU_per_core" value="{{ fu_count(core.fuPool.FUList, ["IntAlu"]) }}"/>
+    <param name="MUL_per_core" value="{{ fu_count(core.fuPool.FUList, ["IntMult", "IntDiv"]) }}"/>
+    <param name="FPU_per_core" value="{{ fu_count(core.fuPool.FUList, ["FloatAdd", "FloatCmp", "FloatCvt", "FloatMult", "FloatDiv", "FloatSqrt"]) }}"/>
+    <!-- buffer between IF and ID stage -->
+    <!-- TODO: missing -->
+    <param name="instruction_buffer_size" value="32"/><!--Inst. + micro-op -->
+    <!-- buffer between ID and sche/exe stage -->
+    <!-- TODO: missing -->
+    <param name="decoded_stream_buffer_size" value="16"/>
+    <!-- McPAT support 2 types of OoO cores, RS based and physical reg based -->
+    <param name="instruction_window_scheme" value="1"/><!-- 0 PHYREG based, 1 RSBASED -->
+    <param name="instruction_window_size" value="{{ core.numIQEntries }}"/>
+    <!-- the instruction issue Q as in Alpha 21264; The RS as in Intel P6 -->
+    <param name="fp_instruction_window_size" value="{{ core.numIQEntries }}"/>
+    <param name="ROB_size" value="{{ core.numROBEntries }}"/>
+    <!-- registers -->
+    <param name="archi_Regs_IRF_size" value="16"/><!-- X86-64 has 16GPR -->
+    <param name="archi_Regs_FRF_size" value="32"/><!-- MMX + XMM -->
+    <param name="phy_Regs_IRF_size" value="{{ core.numPhysIntRegs }}"/>
+    <param name="phy_Regs_FRF_size" value="{{ core.numPhysFloatRegs }}"/>
+    <!-- rename logic -->
+    <!-- can be RAM based(0) or CAM based(1) rename scheme
+         RAM-based scheme will have free list, status table;
+         CAM-based scheme have the valid bit in the data field of the CAM
+         both RAM and CAM need RAM-based checkpoint table, checkpoint_depth=# of in_flight instructions;
+         Detailed RAT Implementation see TR -->
+    <param name="rename_scheme" value="0"/>
+    <!-- how many windows in the windowed register file, sun processors;
+         no register windowing is used when this number is 0 -->
+    <param name="register_windows_size" value="0"/>
+    <!-- In OoO cores, loads and stores can be issued whether inorder(Pentium Pro) or (OoO)out-of-order(Alpha),
+         They will always try to execute out-of-order though. -->
+    <param name="LSU_order" value="inorder"/>
+    <param name="store_buffer_size" value="{{ core.SQEntries }}"/>
+    <param name="load_buffer_size" value="{{ core.LQEntries }}"/>
+    <!-- number of ports refer to sustain-able concurrent memory accesses -->
+    <!-- max_allowed_in_flight_memo_instructions determines the # of ports of load and store buffer
+         as well as the ports of Dcache which is connected to LSU -->
+    <!-- dual-pumped Dcache can be used to save the extra read/write ports -->
+    <!-- TODO: check -->
+    <param name="memory_ports" value="{{ fu_count(core.fuPool.FUList, ["MemRead", "MemWrite"]) }}"/>
+    <param name="RAS_size" value="{{ core.branchPred.RASSize }}"/>
+    <!-- please note: if target architecture is X86, then all the instructions refer to (fused) micro-ops -->
+    <stat name="total_instructions" value="{{ core.iq.iqInstsIssued }}"/>
+    <stat name="int_instructions" value="{{ core.iq.FU_type_0.No_OpClass.count +
+                                         core.iq.FU_type_0.IntAlu.count +
+                                         core.iq.FU_type_0.IntMult.count +
+                                         core.iq.FU_type_0.IntDiv.count +
+                                         core.iq.FU_type_0.IprAccess.count }}"/>
+    <stat name="fp_instructions" value="{{ core.iq.FU_type_0.FloatAdd.count +
+                                        core.iq.FU_type_0.FloatCmp.count +
+                                        core.iq.FU_type_0.FloatCvt.count +
+                                        core.iq.FU_type_0.FloatMult.count +
+                                        core.iq.FU_type_0.FloatDiv.count +
+                                        core.iq.FU_type_0.FloatSqrt.count }}"/>
+    <stat name="branch_instructions" value="{{ core.branchPred.condPredicted }}"/>
+    <stat name="branch_mispredictions" value="{{ core.branchPred.condIncorrect }}"/>
+    <stat name="load_instructions" value="{{ core.iq.FU_type_0.MemRead.count + core.iq.FU_type_0.InstPrefetch.count }}"/>
+    <stat name="store_instructions" value="{{ core.iq.FU_type_0.MemWrite.count }}"/>
+    <stat name="committed_instructions" value="{{ core.commit.committedOps }}"/>
+    <stat name="committed_int_instructions" value="{{ core.commit.int_insts }}"/>
+    <stat name="committed_fp_instructions" value="{{ core.commit.fp_insts }}"/>
+    <!-- <=1, runtime_ipc/peak_ipc; averaged for all cores if homogeneous -->
+    <stat name="pipeline_duty_cycle" value="{{ core.ipc_total/core.commitWidth }}"/>
+    <!-- the following cycle stats are used for heterogeneous cores only,
+         please ignore them if homogeneous cores -->
+    <stat name="total_cycles" value="{{ core.numCycles }}"/>
+    <stat name="idle_cycles" value="{{ core.iew.iewIdleCycles }}"/>
+    <stat name="busy_cycles"  value="{{ core.numCycles - core.iew.iewIdleCycles }}"/>
+    <!-- instruction buffer stats -->
+    <stat name="ROB_reads" value="{{ core.rob.rob_reads }}"/>
+    <stat name="ROB_writes" value="{{ core.rob.rob_writes }}"/>
+    <stat name="rename_reads" value="{{ core.rename.int_rename_lookups }}"/>
+    <stat name="rename_writes" value="{{ core.rename.RenamedOperands }}"/>
+    <stat name="fp_rename_reads" value="{{ core.rename.RenameLookups - core.rename.int_rename_lookups }}"/>
+    <!-- TODO: missing -->
+    <stat name="fp_rename_writes" value="0"/>
+    <!-- Inst window stats -->
+    <stat name="inst_window_reads" value="{{ core.iq.int_inst_queue_reads }}"/>
+    <stat name="inst_window_writes" value="{{ core.iq.int_inst_queue_writes }}"/>
+    <stat name="inst_window_wakeup_accesses" value="{{ core.iq.int_inst_queue_wakeup_accesses }}"/>
+    <stat name="fp_inst_window_reads" value="{{ core.iq.fp_inst_queue_reads }}"/>
+    <stat name="fp_inst_window_writes" value="{{ core.iq.fp_inst_queue_writes }}"/>
+    <stat name="fp_inst_window_wakeup_accesses" value="{{ core.iq.fp_inst_queue_wakeup_accesses }}"/>
+    <!--  RF accesses -->
+    <stat name="int_regfile_reads" value="{{ core.int_regfile_reads }}"/>
+    <stat name="float_regfile_reads" value="{{ core.fp_regfile_reads|default(0) }}"/>
+    <stat name="int_regfile_writes" value="{{ core.int_regfile_writes }}"/>
+    <stat name="float_regfile_writes" value="{{ core.fp_regfile_writes|default(0) }}"/>
+    <stat name="function_calls" value="{{ core.commit.function_calls }}"/>
+    <!-- TODO: missing -->
+    <stat name="context_switches" value="0"/>
+    <!-- Alu stats by default, the processor has one FPU that includes the divider and
+         multiplier. The fpu accesses should include accesses to multiplier and divider  -->
+    <stat name="ialu_accesses" value="{{ core.iq.int_alu_accesses }}"/>
+    <stat name="fpu_accesses" value="{{ core.iq.fp_alu_accesses }}"/>
+    <stat name="mul_accesses" value="0"/>
+    <!-- TODO: missing -->
+    <stat name="cdb_alu_accesses" value="0"/>
+    <stat name="cdb_mul_accesses" value="0"/>
+    <stat name="cdb_fpu_accesses" value="0"/>
+    <!-- multiple cycle accesses should be counted multiple times,
+         otherwise, McPAT can use internal counter for different floating point instructions
+         to get final accesses. But that needs detailed info for floating point inst mix -->
+    <!--  currently the performance simulator should
+         make sure all the numbers are final numbers,
+         including the explicit read/write accesses,
+         and the implicit accesses such as replacements and etc.
+         Future versions of McPAT may be able to reason the implicit access
+         based on param and stats of last level cache
+         The same rule applies to all cache access stats too!  -->
+    <!-- following is AF for max power computation.
+         Do not change them, unless you understand them-->
+    <stat name="IFU_duty_cycle" value="0.25"/>
+    <stat name="LSU_duty_cycle" value="0.25"/>
+    <stat name="MemManU_I_duty_cycle" value="0.25"/>
+    <stat name="MemManU_D_duty_cycle" value="0.25"/>
+    <stat name="ALU_duty_cycle" value="1"/>
+    <stat name="MUL_duty_cycle" value="0.3"/>
+    <stat name="FPU_duty_cycle" value="0.3"/>
+    <stat name="ALU_cdb_duty_cycle" value="1"/>
+    <stat name="MUL_cdb_duty_cycle" value="0.3"/>
+    <stat name="FPU_cdb_duty_cycle" value="0.3"/>
+    <param name="number_of_BPT" value="2"/>
+    <component id="{{ core_name_full }}.predictor" name="PBT">
+      <!-- branch predictor; tournament predictor see Alpha implementation -->
+      {% set bpred = core.branchPred %}
+      <param name="local_predictor_size" value="{{ log(bpred.localHistoryTableSize, 2) }},{{ bpred.localCtrBits }}"/>
+      <param name="local_predictor_entries" value="{{ bpred.localPredictorSize }}"/>
+      <param name="global_predictor_entries" value="{{ bpred.globalPredictorSize }}"/>
+      <param name="global_predictor_bits" value="{{ bpred.globalCtrBits }}"/>
+      <param name="chooser_predictor_entries" value="{{ bpred.choicePredictorSize }}"/>
+      <param name="chooser_predictor_bits" value="{{ bpred.choiceCtrBits }}"/>
+    </component>
+    <component id="{{ core_name_full }}.itlb" name="itlb">
+      <param name="number_entries" value="{{ core.itb.size }}"/>
+      <!-- BEGIN: TODO: missing -->
+      <stat name="total_accesses" value="0"/>
+      <stat name="total_misses" value="0"/>
+      <stat name="conflicts" value="0"/>
+      <!-- END  : TODO: missing -->
+    </component>
+    <component id="{{ core_name_full }}.icache" name="icache">
+      {% set icache_cpus = find("system.ruby.l1_cntrl")|lmatch_has("L1Icache")|list %}
+      {% set icache = icache_cpus[loop.index0].L1Icache %}
+      {% set mshrs = icache_cpus[loop.index0].number_of_TBEs / 2 %}
+      {% set icache_config = [ icache.size,
+                               system.ruby.block_size_bytes,
+                               icache.assoc,
+                               1,
+                               1,
+                               (icache.latency / cpu_clock_mhz)|round(method="ceil")|int,
+                               system.ruby.block_size_bytes,
+                               0 ] %}
+      {# constants: bank, throughput w.r.t. core clock, policy #}
+      <!-- cache_policy; 0 no write or write-though with non-write allocate;1 write-back with write-allocate -->
+      <param name="icache_config" value="{{ icache_config|join(', ') }}"/>
+      <param name="buffer_sizes" value="{{ mshrs }},{{ mshrs }},{{ mshrs }},TODO"/>
+      <stat name="read_accesses" value="{{ icache.demand_hits }}"/>
+      <stat name="read_misses" value="{{ icache.demand_misses }}"/>
+      <stat name="conflicts" value="TODO"/>
+    </component>
+    <component id="{{ core_name_full }}.dtlb" name="dtlb">
+      <param name="number_entries" value="{{ core.dtb.size }}"/>
+      <!-- BEGIN: TODO: missing -->
+      <stat name="total_accesses" value="0"/>
+      <stat name="total_misses" value="0"/>
+      <stat name="conflicts" value="0"/>
+      <!-- END  : TODO: missing -->
+    </component>
+    <component id="{{ core_name_full }}.dcache" name="dcache">
+      {% set dcache_cpus = find("system.ruby.l1_cntrl")|lmatch_has("L1Dcache")|list %}
+      {% set dcache = dcache_cpus[loop.index0].L1Dcache %}
+      {% set dcache_config = [ dcache.size,
+                               system.ruby.block_size_bytes,
+                               dcache.assoc,
+                               1,
+                               1,
+                               (dcache.latency / cpu_clock_mhz)|round(method="ceil")|int,
+                               system.ruby.block_size_bytes,
+                               1 ] %}
+      {% set l1_load = system.ruby.L1Cache_Controller.Load %}
+      {% set l1_store = system.ruby.L1Cache_Controller.Store %}
+      {% set l1_replace = system.ruby.L1Cache_Controller.L1_Replacement %}
+      {% if dcache_cpus|length > 1 %}
+        {% set l1_load = l1_load.buckets[loop.index0] %}
+        {% set l1_store = l1_store.buckets[loop.index0] %}
+        {% set l1_replace = l1_replace.buckets[loop.index0] %}
+      {% endif %}
+      {# constants: bank, throughput w.r.t. core clock, policy #}
+      <param name="dcache_config" value="{{ dcache_config|join(', ') }}"/>
+      <param name="buffer_sizes" value="{{ mshrs }},{{ mshrs }},{{ mshrs }},{{ dcache_write_buffers|default(mshrs) }}"/>
+      <stat name="read_accesses" value="{{ l1_load.count }}"/>
+      <stat name="write_accesses" value="{{ l1_store.count }}"/>
+      <stat name="read_misses" value="TODO"/>
+      <stat name="write_misses" value="TODO"/>
+      <stat name="conflicts" value="{{ l1_replace.count }}"/>
+    </component>
+    <param name="number_of_BTB" value="2"/>
+    <component id="{{ core_name_full }}.BTB" name="BTB">
+      {# contants: associativity, bank, throughput w.r.t. core clock, latency w.r.t. core clock #}
+      <param name="BTB_config" value="{{ bpred.BTBEntries * bpred.BTBTagSize }},{{ bpred.BTBTagSize }},1,1,1,3"/>
+      <!--See IFU code for guideline -->
+      <stat name="read_accesses" value="{{ bpred.BTBLookups }}"/>
+      <stat name="write_accesses" value="{{ core.commit.branches }}"/>
+    </component>
+  </component>
+{% endfor %}

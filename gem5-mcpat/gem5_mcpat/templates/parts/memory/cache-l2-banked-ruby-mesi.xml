@@ -1,0 +1,41 @@
+{# L2Directory must have not component listed #}
+<param name="number_of_L2Directories" value="0"/>
+<param name="homogeneous_L2Directories" value="0"/>
+
+{% set cpu_clock_mhz = (sim_freq/system.cpu_clk_domain.clock) / 10**6 %}
+{% set l2s = find('system.ruby.l2_cntrl')|lmatch_eq('type', 'L2Cache_Controller')|list %}
+<param name="number_of_L2s" value="{{ l2s|length }}"/>
+<param name="homogeneous_L2s" value="0"/>
+<param name="Private_L2" value="0"/>
+{% for l2 in l2s %}
+  {% set mshrs = l2.number_of_TBEs %}
+  {% set l2 = l2.L2cache %}
+  {% set l2_name = "L2" ~ loop.index0 -%}
+  {% set l2_name_full = "system." ~ l2_name -%}
+<component id="{{ l2_name_full }}" name="{{ l2_name }}">
+  {% set l2_config = [ l2.size,
+                       system.ruby.block_size_bytes,
+                       l2.assoc,
+                       1,
+                       1,
+                       (l2.latency / cpu_clock_mhz)|round(method="ceil")|int,
+                       system.ruby.block_size_bytes,
+                       1 ] %}
+  {# constants: bank, throughput w.r.t. core clock, policy #}
+  <param name="L2_config" value="{{ l2_config|join(',') }}"/>
+  <param name="buffer_sizes" value="{{ mshrs }},{{ mshrs }},{{ mshrs }},TODO"/>
+  <!-- TODO: check -->
+  <param name="clockrate" value="{{ cpu_clock_mhz }}"/>
+  <param name="vdd" value="0"/><!-- 0 means using ITRS default vdd -->
+  <param name="ports" value="1,1,1"/>
+  <!-- number of r, w, and rw ports -->
+  <param name="device_type" value="0"/>
+  <stat name="read_accesses" value="TODO"/>
+  <stat name="read_misses" value="TODO"/>
+  <stat name="write_accesses" value="TODO"/>
+  <stat name="write_misses" value="TODO"/>
+  <stat name="conflicts" value="TODO"/>
+  <!-- TODO: missing -->
+  <stat name="duty_cycle" value="1"/>
+</component>
+{% endfor %}

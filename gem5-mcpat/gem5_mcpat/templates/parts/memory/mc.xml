@@ -1,0 +1,31 @@
+{% set mc_clock_mhz = (sim_freq/system.ruby.memctrl_clk_domain.clock) / 10**6 %}
+{% set mc_clock_hz = 10**6 * mc_clock_mhz %}
+{% set mc_transfer_mb = system.ruby.block_size_bytes / (2**20) %}
+<component id="system.mc" name="mc">
+  <param name="type" value="0"/> <!-- 1: low power; 0 high performance -->
+  <param name="mc_clock" value="{{ mc_clock_mhz }}"/>
+  <param name="vdd" value="0"/>
+  <param name="peak_transfer_rate" value="{{ system.ruby.block_size_bytes * (1/mc_clock_mhz) / 2**20 }}"/><!--MB/s-->
+  <param name="peak_transfer_rate" value="{{ mc_transfer_mb * mc_clock_hz * system.ruby.dir_cntrl0.memBuffer.ranks_per_dimm / system.ruby.dir_cntrl0.memBuffer.mem_ctl_latency }}"/><!--MB/s-->
+  <param name="block_size" value="{{ system.ruby.block_size_bytes }}"/><!--B-->
+  <param name="number_mcs" value="1"/>
+  <param name="memory_channels_per_mc" value="1"/>
+  <param name="number_ranks" value="{{ system.ruby.dir_cntrl0.memBuffer.ranks_per_dimm }}"/>
+  <param name="withPHY" value="0"/>
+  <param name="req_window_size_per_channel" value="32"/>
+  <param name="IO_buffer_size_per_channel" value="32"/>
+  <param name="databus_width" value="{{ system.ruby.block_size_bytes * 8 }}"/>
+  <param name="addressbus_width" value="{{ physical_address_width|default(48) }}"/>
+  {% set reads = system.ruby.Directory_Controller.Fetch %}
+  {% set writes = system.ruby.Directory_Controller.Memory_Data %}
+  {% if 'total' in reads %}
+    {% set reads = reads.total %}
+    {% set writes = writes.total %}
+  {% else %}
+    {% set reads = reads.count %}
+    {% set writes = writes.count %}
+  {% endif %}
+  <stat name="memory_accesses" value="{{ reads + writes }}"/>
+  <stat name="memory_reads" value="{{ reads }}"/>
+  <stat name="memory_writes" value="{{ writes }}"/>
+</component>
