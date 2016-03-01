@@ -1,3 +1,0 @@
-{# L1Directory must have not component listed #}
-<param name="number_of_L1Directories" value="0"/>
-<param name="homogeneous_L1Directories" value="0"/>
