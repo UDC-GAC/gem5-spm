@@ -19,7 +19,7 @@
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
-  int ni = 32;
+  int ni = 1024;
 
   /* Variable declaration/allocation. */
   double alpha;

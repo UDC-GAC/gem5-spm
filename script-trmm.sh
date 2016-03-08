@@ -37,6 +37,8 @@ then
    ./build/X86/gem5.debug --stats-file=trmm-nospm-spmarch.txt configs/spm/se.py --mem-size=4GB --caches --cpu-type=timing -c tests/test-progs/spm/trmm/org
 elif [ $1 = "cache" ]
 then
-    valgrind --tool=cachegrind --cachegrind-out-file=trmm-cachegrind-$2.out $dir/cache$2
+    cd tests/test-progs/spm/trmm/
+    make cache1 NN=$2
+    valgrind --tool=cachegrind --cachegrind-out-file=trmm-cachegrind-$2.out --D1=32768,8,64 --LL=262144,1,64 $dir/cache$2
     cg_annotate --auto=yes trmm-cachegrind-$2.out
 fi

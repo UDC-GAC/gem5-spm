@@ -11,6 +11,10 @@
 #include <string.h>
 #include <math.h>
 
+#ifndef N
+#define N 1024
+#endif
+
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "trmm.h"
@@ -18,13 +22,14 @@
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
-  int ni = 1024;
+  int ni = N;
 
   /* Variable declaration/allocation. */
   double alpha;
 
   double *A = (double *) malloc(ni*ni*sizeof(double));
   double *B = (double *) malloc(ni*ni*sizeof(double));
+  double tmp;
   
   /* Run kernel. */
   int i, j, k;
@@ -38,8 +43,13 @@ int main(int argc, char** argv)
   /*  B := alpha*A'*B, A triangular */
   for (i = 1; i <  ni; i++)
     for (j = 0; j < ni; j++)
-      for (k = 0; k < i; k++)
-        B[i*ni + j] += alpha * A[i*ni + k] * B[j*ni + k];
+	for (k = 0; k < i; k++) {
+	    tmp = B[j*ni + k];
+	    tmp *= alpha;
+	    tmp *= A[i*ni + k];
+	    B[i*ni + j] += tmp;
+	}
+        
 #pragma endscop
 
   free(A);

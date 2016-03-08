@@ -12,7 +12,7 @@ org: trmm_mod.c
 	gcc -I $(UTIL) $(INST) trmm_mod.c -o org -DUNIX --static
 
 cache1: trmm_cachegrind.c
-	gcc -g trmm_cachegrind.c -o cache1
+	gcc -g trmm_cachegrind.c -o cache$(NN) -DN=$(NN)
 
 cache2: trmm_cachegrind.c
 	gcc -g -O2 trmm_cachegrind.c -o cache2
