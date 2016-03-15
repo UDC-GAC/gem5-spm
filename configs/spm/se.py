@@ -242,13 +242,14 @@ for i in xrange(np):
     system.cpu[i].createThreads()
 
 MemClass = Simulation.setMemClass(options)
-system.spmbus = SPMXBar()
+system.spmbus = SpmNCXBar()
+#system.spmbus = SpmXBar()
 system.membus = SystemXBar()
 system.spmbus.master = system.membus.slave
 system.system_port = system.spmbus.slave
 CacheConfigSpm.config_cache(options, system)
-ScratchPadConfig.config_spm(options, system)
 MemConfigSpm.config_mem(options, system)
+ScratchPadConfig.config_spm(options, system)
 
 root = Root(full_system = False, system = system)
 Simulation.run(options, root, system, FutureClass)

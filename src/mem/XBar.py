@@ -84,7 +84,7 @@ class BaseXBar(MemObject):
     # xbar configuration.
     use_default_range = Param.Bool(False, "Perform address mapping for " \
                                        "the default port")
-
+    
 class NoncoherentXBar(BaseXBar):
     type = 'NoncoherentXBar'
     cxx_header = "mem/noncoherent_xbar.hh"
@@ -153,7 +153,21 @@ class IOXBar(NoncoherentXBar):
     forward_latency = 1
     response_latency = 2
 
-class SPMXBar(NoncoherentXBar):
+class SpmNCXBar(NoncoherentXBar):
+    # 128-bit crossbar by default
+    width = 32
+
+    # Assume a simpler datapath than a coherent crossbar, incuring
+    # less pipeline stages for decision making and forwarding of
+    # requests.
+    frontend_latency = 0
+    forward_latency = 0
+    response_latency = 0    
+    
+class SpmXBar(NoncoherentXBar):
+    type = 'SpmXBar'
+    abstract = False
+    cxx_header = "mem/spmbar.hh"    
     width = 32
 
     # A handful pipeline stages for each portion of the latency
