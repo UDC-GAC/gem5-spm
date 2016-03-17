@@ -32,6 +32,7 @@ class SpmXBar : public NoncoherentXBar
     /** Function called by the port when the crossbar is recieving a Timing
       request packet.*/
     virtual bool recvTimingReq(PacketPtr pkt, PortID slave_port_id);
+    virtual bool recvTimingResp(PacketPtr pkt, PortID slave_port_id);
   public:
        SpmXBar(const SpmXBarParams *p);
 };

@@ -32,7 +32,7 @@ SpmXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
     unsigned int pkt_cmd = pkt->cmdToIndex();
 
     // store the old header delay so we can restore it if needed
-    Tick old_header_delay = pkt->headerDelay;
+    //Tick old_header_delay = pkt->headerDelay;
 
     // a request sees the frontend and forward latency
     Tick xbar_delay = 0;
@@ -56,7 +56,7 @@ SpmXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
         assert(!pkt->memInhibitAsserted());
 
         // restore the header delay as it is additive
-        pkt->headerDelay = old_header_delay;
+        //pkt->headerDelay = old_header_delay;
 
         // occupy until the header is sent
         reqLayers[master_port_id]->failedTiming(src_port,
@@ -80,6 +80,60 @@ SpmXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
 
     return true;
 }
+
+bool
+SpmXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
+{
+    // determine the source port based on the id
+    MasterPort *src_port = masterPorts[master_port_id];
+
+    // determine the destination
+    const auto route_lookup = routeTo.find(pkt->req);
+    assert(route_lookup != routeTo.end());
+    const PortID slave_port_id = route_lookup->second;
+    assert(slave_port_id != InvalidPortID);
+    assert(slave_port_id < respLayers.size());
+
+    // test if the layer should be considered occupied for the current
+    // port
+    if (!respLayers[slave_port_id]->tryTiming(src_port)) {
+        return false;
+    }
+
+    // store size and command as they might be modified when
+    // forwarding the packet
+    unsigned int pkt_size = pkt->hasData() ? pkt->getSize() : 0;
+    unsigned int pkt_cmd = pkt->cmdToIndex();
+
+    // a response sees the response latency
+    Tick xbar_delay = 0;
+
+    // set the packet header and payload delay
+    calcPacketTiming(pkt, xbar_delay);
+
+    // determine how long to be crossbar layer is busy
+    Tick packetFinishTime = clockEdge(Cycles(1)) + pkt->payloadDelay;
+
+    // send the packet through the destination slave port
+    bool success M5_VAR_USED = slavePorts[slave_port_id]->sendTimingResp(pkt);
+
+    // currently it is illegal to block responses... can lead to
+    // deadlock
+    assert(success);
+
+    // remove the request from the routing table
+    routeTo.erase(route_lookup);
+
+    respLayers[slave_port_id]->succeededTiming(packetFinishTime);
+
+    // stats updates
+    pktCount[slave_port_id][master_port_id]++;
+    pktSize[slave_port_id][master_port_id] += pkt_size;
+    transDist[pkt_cmd]++;
+
+    return true;
+}
+
 
 void
 SpmXBar::calcPacketTiming(PacketPtr pkt, Tick header_delay)
