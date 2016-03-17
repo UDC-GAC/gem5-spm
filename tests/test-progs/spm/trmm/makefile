@@ -2,14 +2,15 @@
 
 UTIL=../../../../util
 INST=${UTIL}/m5/m5op_x86.S
+FLAGS=-g -O2
 
 all: spm org
 
 spm: trmm_spm.c
-	gcc -I $(UTIL) $(INST) trmm_spm.c -o spm -DUNIX --static
+	gcc -I $(UTIL) $(INST) trmm_spm.c -o spm $(FLAGS) -DUNIX --static
 
 org: trmm_mod.c
-	gcc -I $(UTIL) $(INST) trmm_mod.c -o org -DUNIX --static
+	gcc -I $(UTIL) $(INST) trmm_mod.c -o org $(FLAGS) -DUNIX --static
 
 cache1: trmm_cachegrind.c
 	gcc -g trmm_cachegrind.c -o cache$(NN) -DN=$(NN)
