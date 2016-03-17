@@ -39,7 +39,7 @@
 #include "mem/cache/tags/fa_lru.hh"
 #include "mem/cache/tags/lru.hh"
 #include "mem/cache/tags/random_repl.hh"
-#include "mem/cache/cache_impl.hh"
+#include "mem/cache/cache_impl_spm.hh"
 
 // Template Instantiations
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
