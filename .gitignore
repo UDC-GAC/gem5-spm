@@ -15,6 +15,13 @@ tests/test-progs/spm/trmm/*
 tests/test-progs/spm/2mm/*
 !tests/test-progs/spm/2mm/*.c
 !tests/test-progs/spm/2mm/makefile
+tests/test-progs/spm/trisolv/*
+!tests/test-progs/spm/trisolv/*.c
+!tests/test-progs/spm/trisolv/makefile
+tests/test-progs/spm/bicg/*
+!tests/test-progs/spm/bicg/*.c
+!tests/test-progs/spm/bicg/makefile
+
 
 \.*
 !\.gitignore
