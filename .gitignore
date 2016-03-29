@@ -6,22 +6,9 @@ parsetab.py
 build/
 m5out/
 
-tests/test-progs/spm/test_dir/*
-!tests/test-progs/spm/test_dir/*.c
-!tests/test-progs/spm/test_dir/makefile
-tests/test-progs/spm/trmm/*
-!tests/test-progs/spm/trmm/*.c
-!tests/test-progs/spm/trmm/makefile
-tests/test-progs/spm/2mm/*
-!tests/test-progs/spm/2mm/*.c
-!tests/test-progs/spm/2mm/makefile
-tests/test-progs/spm/trisolv/*
-!tests/test-progs/spm/trisolv/*.c
-!tests/test-progs/spm/trisolv/makefile
-tests/test-progs/spm/bicg/*
-!tests/test-progs/spm/bicg/*.c
-!tests/test-progs/spm/bicg/makefile
-
+tests/test-progs/spm/*/*
+!tests/test-progs/spm/*/*.c
+!tests/test-progs/spm/*/makefile
 
 \.*
 !\.gitignore
