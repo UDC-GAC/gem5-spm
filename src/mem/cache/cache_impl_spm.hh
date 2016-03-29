@@ -539,8 +539,10 @@ Cache<TagStore>::recvTimingReq(PacketPtr pkt)
         } else if (pkt->isWrite() && !pkt->isRead()) {
             // We pay also for headerDelay that is charged of bus latencies if
             // the packet comes from the bus.
-            Tick allocate_wr_buffer_time = clockEdge(forwardLatency) +
-                                            pkt->headerDelay;
+	    
+	    // clockEdge(lookupLatency) removed
+	    
+            Tick allocate_wr_buffer_time = pkt->headerDelay;
             // Reset the timing of the packet.
             pkt->headerDelay = pkt->payloadDelay = 0;
             allocateWriteBuffer(pkt, allocate_wr_buffer_time, true);
@@ -550,10 +552,12 @@ Cache<TagStore>::recvTimingReq(PacketPtr pkt)
             // time of forwarding to WriteBuffer, in our assumption). It
             // specifies the latency to allocate an internal buffer and to
             // schedule an event to the queued port.
+
+	    // clockEdge(lookupLatency) removed
+	    
             // We pay also for headerDelay that is charged of bus latencies if
             // the packet comes from the bus.
-            Tick allocate_rd_buffer_time = clockEdge(forwardLatency) +
-                                            pkt->headerDelay;
+            Tick allocate_rd_buffer_time = pkt->headerDelay;
             // Reset the timing of the packet.
             pkt->headerDelay = pkt->payloadDelay = 0;
             allocateUncachedReadBuffer(pkt, allocate_rd_buffer_time, true);

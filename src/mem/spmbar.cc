@@ -32,7 +32,7 @@ SpmXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
     unsigned int pkt_cmd = pkt->cmdToIndex();
 
     // store the old header delay so we can restore it if needed
-    //Tick old_header_delay = pkt->headerDelay;
+    Tick old_header_delay = pkt->headerDelay;
 
     // a request sees the frontend and forward latency
     Tick xbar_delay = 0;
@@ -56,7 +56,7 @@ SpmXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
         assert(!pkt->memInhibitAsserted());
 
         // restore the header delay as it is additive
-        //pkt->headerDelay = old_header_delay;
+        pkt->headerDelay = old_header_delay;
 
         // occupy until the header is sent
         reqLayers[master_port_id]->failedTiming(src_port,
@@ -138,7 +138,39 @@ SpmXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
 void
 SpmXBar::calcPacketTiming(PacketPtr pkt, Tick header_delay)
 {
-    // do nothing
+    // the crossbar will be called at a time that is not necessarily
+    // coinciding with its own clock, so start by determining how long
+    // until the next clock edge (could be zero)
+    Tick offset = clockEdge() - curTick();
+
+    // the header delay depends on the path through the crossbar, and
+    // we therefore rely on the caller to provide the actual
+    // value
+    pkt->headerDelay += offset + header_delay;
+
+    // note that we add the header delay to the existing value, and
+    // align it to the crossbar clock
+
+    // do a quick sanity check to ensure the timings are not being
+    // ignored, note that this specific value may cause problems for
+    // slower interconnects
+    panic_if(pkt->headerDelay > SimClock::Int::us,
+             "Encountered header delay exceeding 1 us\n");
+
+    if (pkt->hasData()) {
+        // the payloadDelay takes into account the relative time to
+        // deliver the payload of the packet, after the header delay,
+        // we take the maximum since the payload delay could already
+        // be longer than what this parcitular crossbar enforces.
+        pkt->payloadDelay = std::max<Tick>(pkt->payloadDelay,
+                                           divCeil(pkt->getSize(), width) *
+                                           clockPeriod());
+    }
+
+    // the payload delay is not paying for the clock offset as that is
+    // already done using the header delay, and the payload delay is
+    // also used to determine how long the crossbar layer is busy and
+    // thus regulates throughput
 }
 
 SpmXBar *
