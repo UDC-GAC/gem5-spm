@@ -30,14 +30,13 @@
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
-  int ni = 1024;
+  int ni = 512;
 
   /* Variable declaration/allocation. */
-  double alpha;
-
   double *vaddr = (double *) spm_malloc(SPM_SIZE_1, SPM_1);
   double *B = vaddr;
   double *A = (double *) malloc(ni*ni*sizeof(double));
+  double alpha;
   
   /* Run kernel. */
   int i, j, k;
@@ -57,6 +56,8 @@ int main(int argc, char** argv)
         B[i*ni + j] += alpha * A[i*ni + k] * B[j*ni + k];
 #pragma endscop
   m5_dump_stats(0,0);
+
+  printf("%f\n", B[11]);
 
   return 0;
 }

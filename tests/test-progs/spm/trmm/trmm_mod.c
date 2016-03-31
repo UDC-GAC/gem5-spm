@@ -19,7 +19,7 @@
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
-  int ni = 1024;
+  int ni = 512;
 
   /* Variable declaration/allocation. */
   double alpha;
@@ -45,6 +45,8 @@ int main(int argc, char** argv)
 #pragma endscop
   m5_dump_stats(0,0);
 
+  printf("%f\n", B[11]);
+  
   free(A);
   free(B);
   
