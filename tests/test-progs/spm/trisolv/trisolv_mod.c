@@ -11,7 +11,9 @@
 #include <math.h>
 #include "m5/m5op.h"
 
-#define N 500
+#ifndef N
+#define N 1000
+#endif
 
 int main(int argc, char** argv)
 {
@@ -32,6 +34,7 @@ int main(int argc, char** argv)
     }
 
   /* Run kernel. */
+  m5_reset_stats(0,0);
 #pragma scop
   for (i = 0; i < N; i++)
     {
@@ -41,6 +44,9 @@ int main(int argc, char** argv)
       x[i] = x[i] / A[i*n + i];
     }
 #pragma endscop
+  m5_dump_stats(0,0);
+
+  printf("%f, %f, %f\n", A[11], c[11], x[11]);
 
   return 0;
 }

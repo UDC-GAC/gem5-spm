@@ -11,8 +11,12 @@
 #include <math.h>
 #include "m5/m5op.h"
 
-#define N 500
+#ifndef N
+#define N 1000
+#endif
 
+#define SPM_SIZE 1024*1024*16
+#define SPM_N    1
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
@@ -20,7 +24,7 @@ int main(int argc, char** argv)
   int n = N;
 
   /* Variable declaration/allocation. */
-  double *A = (double *) spm_malloc(n*n*sizeof(double), 1);
+  double *A = (double *) spm_malloc(SPM_SIZE, SPM_N);
   double *x = (double *) malloc(n*n*sizeof(double));
   double *c = (double *) malloc(n*n*sizeof(double));
 
@@ -32,6 +36,7 @@ int main(int argc, char** argv)
     }
 
   /* Run kernel. */
+  m5_reset_stats(0,0);
 #pragma scop
   for (i = 0; i < N; i++)
     {
@@ -41,6 +46,9 @@ int main(int argc, char** argv)
       x[i] = x[i] / A[i*n + i];
     }
 #pragma endscop
+  m5_dump_stats(0,0);
+
+  printf("%f, %f, %f\n", A[11], x[11], c[11]);
 
   return 0;
 }

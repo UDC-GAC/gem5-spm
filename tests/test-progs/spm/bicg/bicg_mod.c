@@ -11,7 +11,10 @@
 #include <math.h>
 #include "m5/m5op.h"
 
-#define NX          500
+#ifndef NX
+#define NX          1000
+#endif
+
 #ifndef M_PI
 #define M_PI 3.141592
 #endif
@@ -63,6 +66,8 @@ int main(int argc, char** argv)
     }
 #pragma endscop
   m5_dump_stats(0,0);
+
+  printf("%f, %f, %f, %f, %f\n", A[11], p[11], q[11], r[11], s[11]);
 
   return 0;
 }
