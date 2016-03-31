@@ -11,9 +11,17 @@
 #include <math.h>
 #include "m5/m5op.h"
 
-#define NI 1000
-#define NJ 1000
-#define NK 1000
+#ifndef NI
+#define NI 200
+#endif
+
+#ifndef NJ
+#define NJ 200
+#endif
+
+#ifndef NK
+#define NK 200
+#endif
 
 #ifndef SPM_VAR
 # define KBYTE      1024
@@ -67,6 +75,8 @@ int main(int argc, char** argv)
       }
 #pragma endscop
   m5_dump_stats(0,0);
+
+  printf("%f, %f, %f\n", C[11], A[11], B[11]);
 
   return 0;
 }
