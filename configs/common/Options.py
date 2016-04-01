@@ -139,6 +139,7 @@ def addCommonOptions(parser):
                       help="use external ports of this port_type for caches")
     parser.add_option("--caches", action="store_true")
     parser.add_option("--l2cache", action="store_true")
+    parser.add_option("--l3cache", action="store_true")
     parser.add_option("--fastmem", action="store_true")
     parser.add_option("--num-dirs", type="int", default=1)
     parser.add_option("--num-l2caches", type="int", default=4)

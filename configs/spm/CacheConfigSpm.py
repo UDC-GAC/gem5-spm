@@ -56,8 +56,8 @@ def config_cache(options, system):
         dcache_class, icache_class, l2_cache_class = \
             O3_ARM_v7a_DCache, O3_ARM_v7a_ICache, O3_ARM_v7aL2
     else:
-        dcache_class, icache_class, l2_cache_class = \
-            L1Cache, L1Cache, L2Cache
+        dcache_class, icache_class, l2_cache_class, l3_cache_class = \
+            L1Cache, L1Cache, L2Cache, L3Cache
 
     # Set the cache line size of the system
     system.cache_line_size = options.cacheline_size
@@ -69,10 +69,20 @@ def config_cache(options, system):
         system.l2 = l2_cache_class(clk_domain=system.cpu_clk_domain,
                                    size=options.l2_size,
                                    assoc=options.l2_assoc)
-
+        
         system.tol2bus = L2XBar(clk_domain = system.cpu_clk_domain)
         system.l2.cpu_side = system.tol2bus.master
-        system.l2.mem_side = system.spmbus.slave
+        if options.l3cache:
+            system.l3 = l3_cache_class(clk_domain=system.cpu_clk_domain,
+                                   size=options.l2_size,
+                                   assoc=options.l2_assoc)
+            system.tol3bus = L2XBar(clk_domain = system.cpu_clk_domain)
+            system.l3.cpu_side = system.tol3bus.master
+            system.l2.mem_side = system.tol3bus.slave
+            system.l3.mem_side = system.membus.slave
+        else:
+            system.l2.mem_side = system.membus.slave
+
 
     if options.memchecker:
         system.memchecker = MemChecker()
