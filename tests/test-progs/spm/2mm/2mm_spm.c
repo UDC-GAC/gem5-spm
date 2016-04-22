@@ -18,8 +18,8 @@
 # define SPM_SIZE_1 MBYTE*256
 # define SPM_SIZE_2 MBYTE*128
 # define SPM_SIZE_3 MBYTE*128
-# define NI         32
-# define N          32*32
+# define NI         1024
+# define N          1024*1024
 #endif
 
 int main(int argc, char** argv)
@@ -80,5 +80,7 @@ int main(int argc, char** argv)
 #pragma endscop
   m5_dump_stats(0,0);
 
+  printf("%f %f %f %f %f %f\n", A[11], B[11], C[11], D[11], alpha, beta);
+  
   return 0;
 }
