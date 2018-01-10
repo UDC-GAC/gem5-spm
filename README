@@ -1,3 +1,16 @@
+## About this version
+
+When citing this work, please do it with:
+
+```
+@CONFERENCE {horroarchitectural,
+    author    = "Horro, Marcos and Rodr{\i}guez, Gabriel and Touriño, Juan and Kandemir, Mahmut T",
+    title     = "Architectural exploration of heterogeneous memory systems",
+    booktitle = "19th Workshop on Compilers for Parallel Computing",
+    year      = "2016"
+}
+```
+
 This is the gem5 simulator.
 
 The main website can be found at http://www.gem5.org
